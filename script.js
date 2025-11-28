@@ -6,13 +6,13 @@ class CinematicWebsite {
         this.totalSections = 0;
         this.sections = [];
         this.audio = null;
-        this.isAudioPlaying = false;
+        this.isAudioPlaying = true; // Start with audio playing
         this.autoProgressTimer = null;
         this.isNarrating = false;
         this.currentUtterance = null;
         this.sectionNarrated = new Set(); // Track which sections have been narrated
         this.introMusicPlayed = false;
-        this.isPaused = true; // Start paused for intro music
+        this.isPaused = false; // Start playing automatically
         this.soundcloudPlayer = null;
         this.fadeInterval = null;
         this.init();
@@ -35,11 +35,11 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
+        // Initialize SoundCloud player and start audio immediately
+        this.initializeSoundCloudPlayer();
+        
         // Start with a cinematic entrance
         this.playIntroductionSequence();
-        
-        // Initialize SoundCloud player and start 2-minute fade-in immediately
-        this.initializeSoundCloudPlayer();
         
         console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
     }
@@ -137,17 +137,15 @@ class CinematicWebsite {
     }
     
     toggleBackgroundMusic() {
-        if (this.soundcloudPlayer) {
+        if (this.soundcloudPlayer && this.scWidget) {
             if (this.isAudioPlaying) {
-                // Lower volume by adjusting opacity
-                this.soundcloudPlayer.style.opacity = '0';
-                this.soundcloudPlayer.style.pointerEvents = 'none';
+                // Pause the audio using SoundCloud Widget API
+                this.scWidget.pause();
                 this.isAudioPlaying = false;
                 document.querySelector('.audio-btn').textContent = '🔇';
             } else {
-                // Show SoundCloud player with controllable volume
-                this.soundcloudPlayer.style.opacity = '0.01';
-                this.soundcloudPlayer.style.pointerEvents = 'auto';
+                // Resume the audio using SoundCloud Widget API
+                this.scWidget.play();
                 this.isAudioPlaying = true;
                 document.querySelector('.audio-btn').textContent = '🔊';
             }
@@ -262,8 +260,11 @@ class CinematicWebsite {
                         this.scWidget.setVolume(0);
                     }
                     
-                    console.log('SoundCloud audio fade-out complete using pure API - starting video fade to black');
-                    this.fadeVideoToBlack();
+                    console.log('SoundCloud audio fade-out complete using pure API - waiting 2 seconds before video fade to black');
+                    // Wait 2 seconds after music stops before fading to black
+                    setTimeout(() => {
+                        this.fadeVideoToBlack();
+                    }, 2000);
                 } else {
                     // Use pure Widget API for smooth volume fade only
                     if (this.scWidget) {
@@ -350,8 +351,11 @@ class CinematicWebsite {
                     this.soundcloudPlayer.style.display = 'none';
                     clearInterval(fadeOutInterval);
                     this.isAudioPlaying = false;
-                    console.log('SoundCloud audio completely faded out - starting video fade to black');
-                    this.fadeVideoToBlack();
+                    console.log('SoundCloud audio completely faded out - waiting 2 seconds before video fade to black');
+                    // Wait 2 seconds after music stops before fading to black
+                    setTimeout(() => {
+                        this.fadeVideoToBlack();
+                    }, 2000);
                 } else {
                     this.soundcloudPlayer.style.filter = `opacity(${currentOpacity}) brightness(${currentOpacity + 0.25})`;
                 }
@@ -642,9 +646,9 @@ class CinematicWebsite {
     displayWelcomeMessage() {
         // Natural, warm voice introduction with actual narration
         const messages = [
-            "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so happy you're here with us today.",
+            "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.",
             "Let's prepare our hearts for a wonderful journey through God's Word together.",
-            "Today we'll explore the beautiful Parable of the Talents from Matthew 25. It's truly inspiring.",
+            "Here's a beautiful teaching for us today. The Parable of the Talents from Matthew chapter 25. It's truly inspiring.",
             "Come, let's discover what amazing gifts our loving God has given each one of us."
         ];
         
@@ -702,12 +706,6 @@ class CinematicWebsite {
     }
     
     speakText(text, onComplete = null) {
-        // Don't speak if we're paused (waiting for intro music)
-        if (this.isPaused) {
-            console.log('Narration paused, waiting for intro music to complete');
-            return;
-        }
-        
         // Text-to-speech narration with natural joyful settings
         if ('speechSynthesis' in window) {
             // Cancel any existing speech
@@ -718,7 +716,7 @@ class CinematicWebsite {
             utterance.pitch = 1.1;  // Slight uplift for warmth while staying natural
             utterance.volume = 1.0;  // Maximum volume with natural delivery
             
-            // Try to get a warm, natural female voice
+            // Use consistent warm, natural female voice for all narration
             const voices = speechSynthesis.getVoices();
             const naturalVoice = voices.find(voice => 
                 (voice.name.toLowerCase().includes('samantha') ||
