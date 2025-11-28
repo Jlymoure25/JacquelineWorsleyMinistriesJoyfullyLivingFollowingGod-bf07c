@@ -36,16 +36,15 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Initialize SoundCloud player and start audio immediately
+        // Start everything immediately
         this.initializeSoundCloudPlayer();
-        
-        // Start background music automatically
-        setTimeout(() => {
-            this.startBackgroundMusic();
-        }, 1000);
-        
-        // Start with a cinematic entrance
+        this.startBackgroundMusic();
         this.playIntroductionSequence();
+        
+        // Force narration to start immediately
+        setTimeout(() => {
+            this.displayWelcomeMessage();
+        }, 500);
         
         console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
     }
@@ -70,20 +69,25 @@ class CinematicWebsite {
             console.log('SoundCloud player reference established');
             
             // Initialize SoundCloud Widget API with delayed setup
-            setTimeout(() => {
-                if (typeof SC !== 'undefined' && SC.Widget) {
+            // Force immediate SoundCloud initialization
+            const initSoundCloud = () => {
+                if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
                     this.scWidget = SC.Widget(this.soundcloudPlayer);
                     
-                    // Comprehensive Widget API event binding for full control
                     this.scWidget.bind(SC.Widget.Events.READY, () => {
-                        console.log('SoundCloud Widget API ready - enforcing 17% volume with full API controls');
-                        this.scWidget.setVolume(17); // Widget API: 17% volume control
-                        this.scWidget.seekTo(0); // Widget API: seekTo(0) command
-                        this.scWidget.play(); // Auto-play immediately
-                        this.scWidget.getDuration((duration) => {
-                            console.log('Audio duration:', duration, 'ms');
-                        });
+                        console.log('SoundCloud Widget ready - starting audio immediately');
+                        this.scWidget.setVolume(17);
+                        this.scWidget.seekTo(0);
+                        this.scWidget.play();
+                        this.isAudioPlaying = true;
+                        console.log('SoundCloud audio started automatically');
                     });
+                } else {
+                    console.log('SoundCloud not ready, retrying in 100ms');
+                    setTimeout(initSoundCloud, 100);
+                }
+            };
+            initSoundCloud();
                 } else {
                     console.log('SoundCloud Widget API not available, retrying...');
                     setTimeout(() => this.setupAudio(), 1000);
@@ -135,6 +139,18 @@ class CinematicWebsite {
                 });
                 console.log('Pure Widget API volume control set to 17%');
             }
+        }
+    }
+    
+    startFallbackAudio() {
+        const fallbackAudio = document.getElementById('backgroundAudio');
+        if (fallbackAudio) {
+            fallbackAudio.play().then(() => {
+                console.log('Fallback audio started');
+                this.isAudioPlaying = true;
+            }).catch(e => {
+                console.log('Fallback audio failed:', e);
+            });
         }
         
         // Initialize ambient audio system as minimal fallback
@@ -324,20 +340,23 @@ class CinematicWebsite {
     }
     
     startBackgroundMusic() {
-        // SoundCloud player with immediate play and fade-in effect
-        console.log('Starting background music with user interaction');
-        if (this.soundcloudPlayer && this.scWidget) {
-            // Start playing immediately with user interaction
-            this.scWidget.play();
-            this.scWidget.setVolume(17);
-            this.fadeInAudio();
-            console.log('SoundCloud "We Belong Together (Instrumental)" starting with fade-in');
-            this.isAudioPlaying = true;
-            const audioBtn = document.querySelector('.audio-btn');
-            if (audioBtn) audioBtn.textContent = '🔊';
+        console.log('Attempting to start background music automatically');
+        
+        // Try SoundCloud first
+        if (this.soundcloudPlayer) {
+            if (this.scWidget) {
+                this.scWidget.play();
+                this.scWidget.setVolume(17);
+                this.isAudioPlaying = true;
+                console.log('SoundCloud audio started');
+            } else {
+                console.log('SoundCloud widget not ready, trying fallback audio');
+                this.startFallbackAudio();
+            }
         } else {
-            console.log('SoundCloud player not ready, initializing...');
-            setTimeout(() => this.startBackgroundMusic(), 1000);
+            console.log('SoundCloud player not found, using fallback audio');
+            this.startFallbackAudio();
+        }
             if (this.ambientAudio) {
                 this.ambientAudio.play();
             }
@@ -620,25 +639,12 @@ class CinematicWebsite {
     }
 
     playIntroductionSequence() {
-        // Start with background music and immediately begin narration
-        const introSection = document.getElementById('intro');
-        if (introSection) {
-            // Start background music
-            this.startBackgroundMusic();
-            console.log('Starting smooth jazz background music...');
-            
-            // Initialize music (no message)
-            this.showMusicIntro();
-            
-            // Start narration immediately (no 5-second delay)
-            setTimeout(() => {
-                this.isPaused = false; // Unpause narration
-                console.log('Starting narration with smooth jazz background');
-                
-                // Now start the welcome messages
-                this.displayWelcomeMessage();
-            }, 1000); // Just 1 second delay
-        }
+        // Start narration immediately
+        console.log('Starting introduction sequence with automatic narration');
+        this.isPaused = false; // Ensure narration is enabled
+        
+        // Start narration without any delay
+        this.displayWelcomeMessage();
     }
     
     showMusicIntro() {
@@ -663,11 +669,17 @@ class CinematicWebsite {
     }
 
     displayWelcomeMessage() {
-        // Ensure voices are loaded before starting narration
-        if (speechSynthesis.getVoices().length === 0) {
-            setTimeout(() => this.displayWelcomeMessage(), 500);
+        // Force load voices and start immediately
+        const voices = speechSynthesis.getVoices();
+        if (voices.length === 0) {
+            // Force voices to load
+            speechSynthesis.onvoiceschanged = () => {
+                this.displayWelcomeMessage();
+            };
             return;
         }
+        
+        console.log('Starting welcome message narration with', voices.length, 'voices available');
         
         // Natural, warm voice introduction with actual narration
         const messages = [
