@@ -1,0 +1,29 @@
+[build]
+  publish = "."
+  command = "echo 'Static site - no build required'"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Content-Type = "application/javascript"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Content-Type = "text/css"
+
+[[redirects]]
+  from = "/netlify/*"
+  to = "/.netlify/:splat"
+  status = 200
+
+[context.production.environment]
+  NODE_ENV = "production"

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Primary Meta Tags -->
+    <title>Jacqueline Worsley Ministries - Joyfully Living Following God | The Parable of the Talents</title>
+    <meta name="title" content="Jacqueline Worsley Ministries - Joyfully Living Following God | The Parable of the Talents">
+    <meta name="description" content="Experience an interactive cinematic journey through the Biblical Parable of the Talents (Matthew 25:14-30) with inspiring narration, beautiful visuals, and uplifting music. Discover God's wisdom through this transformative biblical story.">
+    <meta name="keywords" content="Bible, Parable of the Talents, Matthew 25, Christian Ministry, Biblical Stories, Faith, God, Jesus, Interactive Bible Study, Jacqueline Worsley, Religious Education">
+    <meta name="author" content="Jacqueline Worsley Ministries">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod/">
+    <meta property="og:title" content="Jacqueline Worsley Ministries - The Parable of the Talents | Interactive Biblical Journey">
+    <meta property="og:description" content="Experience an interactive cinematic journey through the Biblical Parable of the Talents with inspiring narration and beautiful visuals. Discover God's wisdom through this transformative story.">
+    <meta property="og:image" content="https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod/preview-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="Jacqueline Worsley Ministries">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod/">
+    <meta property="twitter:title" content="Jacqueline Worsley Ministries - The Parable of the Talents | Interactive Biblical Journey">
+    <meta property="twitter:description" content="Experience an interactive cinematic journey through the Biblical Parable of the Talents with inspiring narration and beautiful visuals. Discover God's wisdom through this transformative story.">
+    <meta property="twitter:image" content="https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod/preview-image.jpg">
+    <meta property="twitter:creator" content="@JacquelineWorsley">
+    <meta property="twitter:site" content="@JacquelineWorsley">
+    
+    <!-- YouTube / Video Metadata -->
+    <meta property="video:type" content="text/html">
+    <meta property="video:duration" content="600">
+    <meta property="video:tag" content="Bible Study">
+    <meta property="video:tag" content="Parable of the Talents">
+    <meta property="video:tag" content="Christian Ministry">
+    <meta property="video:tag" content="Interactive Bible">
+    
+    <!-- LinkedIn -->
+    <meta property="linkedin:owner" content="Jacqueline Worsley">
+    
+    <!-- Pinterest -->
+    <meta name="pinterest-rich-pin" content="true">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Jacqueline Worsley Ministries - The Parable of the Talents",
+      "description": "Interactive cinematic journey through the Biblical Parable of the Talents",
+      "url": "https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod/",
+      "author": {
+        "@type": "Person",
+        "name": "Jacqueline Worsley"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Jacqueline Worsley Ministries"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "Parable of the Talents",
+        "description": "Biblical story from Matthew 25:14-30"
+      }
+    }
+    </script>
+    
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Playfair+Display:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="audio/ambient.js"></script>
+    <script src="simple-audio.js"></script>
+</head>
+<body>
+    <!-- Background Audio -->
+    <div id="audio-container">
+        <iframe id="soundcloud-player" width="1" height="1" style="position: fixed; bottom: 0; right: 0; opacity: 1;" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/smoothjazzallstars/we-belong-together-3&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true&seek=0&start_track=0&single_active=false&buying=false&liking=false&download=false&sharing=false&show_artwork=true&show_bpm=false&show_playcount=false&enable_api=true&callback=soundCloudCallback"></iframe>
+        <script src="https://w.soundcloud.com/player/api.js"></script>
+        <style>
+            /* SoundCloud player - volume controlled purely via API */
+            #soundcloud-player {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                opacity: 1;
+            }
+            
+            /* Video fade to black transition */
+            .video-fade-to-black {
+                background-color: #000000;
+                opacity: 0;
+                transition: opacity 4s ease-out;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: 9998;
+                pointer-events: none;
+            }
+            
+            .video-fade-to-black.active {
+                opacity: 1;
+                pointer-events: all;
+            }
+        </style>
+    </div>
+    <audio id="backgroundAudio" loop>
+        <!-- Fallback audio -->
+    </audio>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        
+        <!-- Introduction Section -->
+        <section id="intro" class="section active">
+            <div class="cinematic-overlay"></div>
+            <div class="intro-content">
+                <div class="ministry-logo">
+                    <h1 class="ministry-title">
+                        <span class="golden-text">Jacqueline Worsley</span>
+                        <span class="crimson-text">Ministries</span>
+                    </h1>
+                    <h2 class="subtitle">Joyfully Living Following God</h2>
+                </div>
+                <div class="intro-text">
+                    <p class="welcome-message">
+                        Welcome, beloved! Join us on a transformative journey through God's Word, 
+                        where every parable holds eternal wisdom and every lesson draws us closer to His heart.
+                    </p>
+                </div>
+                <button class="continue-btn" onclick="startJourney(); enableAudio();">Begin Your Journey 🎵</button>
+            </div>
+            <div class="golden-particles"></div>
+        </section>
+
+        <!-- Parable Introduction -->
+        <section id="parable-intro" class="section">
+            <div class="cinematic-overlay"></div>
+            <div class="parable-title-card">
+                <h1 class="parable-title">The Parable of the Talents</h1>
+                <h2 class="parable-subtitle">Matthew 25:14-30</h2>
+                <p class="parable-introduction">
+                    A story of faithfulness, multiplication, and the sacred trust God places in each of us...
+                </p>
+            </div>
+        </section>
+
+        <!-- Scene 1: The Journey Begins -->
+        <section id="scene1" class="section parable-scene">
+            <div class="scene-content">
+                <div class="verse-display">
+                    <h3 class="verse-number">Verses 14-15</h3>
+                    <p class="verse-text">
+                        "For it will be like a man going on a journey, who called his servants 
+                        and entrusted to them his property. To one he gave five talents, 
+                        to another two, to another one, to each according to his ability. 
+                        Then he went away."
+                    </p>
+                </div>
+                <div class="scene-visual">
+                    <div class="master-character">
+                        <div class="character-silhouette master"></div>
+                        <p class="character-label">The Master</p>
+                    </div>
+                    <div class="servants-group">
+                        <div class="servant-container">
+                            <div class="character-silhouette servant faithful-servant-1"></div>
+                            <div class="talents-display five-talents">5 Talents</div>
+                            <p class="character-label">Faithful Servant</p>
+                        </div>
+                        <div class="servant-container">
+                            <div class="character-silhouette servant faithful-servant-2"></div>
+                            <div class="talents-display two-talents">2 Talents</div>
+                            <p class="character-label">Faithful Servant</p>
+                        </div>
+                        <div class="servant-container">
+                            <div class="character-silhouette servant lazy-servant"></div>
+                            <div class="talents-display one-talent">1 Talent</div>
+                            <p class="character-label">Fearful Servant</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scene 2: The Faithful Servants -->
+        <section id="scene2" class="section parable-scene">
+            <div class="scene-content">
+                <div class="verse-display">
+                    <h3 class="verse-number">Verses 16-17</h3>
+                    <p class="verse-text">
+                        "He who had received the five talents went at once and traded with them, 
+                        and he made five talents more. So also he who had the two talents 
+                        made two talents more."
+                    </p>
+                </div>
+                <div class="scene-visual">
+                    <div class="trading-animation">
+                        <div class="servant-working">
+                            <div class="character-silhouette servant faithful-servant-1 active"></div>
+                            <div class="multiplication-effect">
+                                <span class="original-talents">5</span>
+                                <span class="multiply-symbol">×</span>
+                                <span class="result-talents">10</span>
+                            </div>
+                            <p class="work-label">Trading & Investing</p>
+                        </div>
+                        <div class="servant-working">
+                            <div class="character-silhouette servant faithful-servant-2 active"></div>
+                            <div class="multiplication-effect">
+                                <span class="original-talents">2</span>
+                                <span class="multiply-symbol">×</span>
+                                <span class="result-talents">4</span>
+                            </div>
+                            <p class="work-label">Trading & Investing</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scene 3: The Fearful Servant -->
+        <section id="scene3" class="section parable-scene">
+            <div class="scene-content">
+                <div class="verse-display">
+                    <h3 class="verse-number">Verse 18</h3>
+                    <p class="verse-text">
+                        "But he who had received the one talent went and dug in the ground 
+                        and hid his master's money."
+                    </p>
+                </div>
+                <div class="scene-visual">
+                    <div class="hiding-scene">
+                        <div class="character-silhouette servant lazy-servant fearful"></div>
+                        <div class="buried-talent">
+                            <div class="ground-layer"></div>
+                            <div class="hidden-treasure">1</div>
+                        </div>
+                        <p class="fear-label">"I was afraid..."</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scene 4: The Reckoning -->
+        <section id="scene4" class="section parable-scene">
+            <div class="scene-content">
+                <div class="verse-display">
+                    <h3 class="verse-number">Verses 19-23</h3>
+                    <p class="verse-text">
+                        "Now after a long time the master of those servants came and settled accounts with them... 
+                        'Well done, good and faithful servant. You have been faithful over a little; 
+                        I will set you over much. Enter into the joy of your master.'"
+                    </p>
+                </div>
+                <div class="scene-visual">
+                    <div class="judgment-scene">
+                        <div class="master-return">
+                            <div class="character-silhouette master-judge"></div>
+                        </div>
+                        <div class="faithful-servants">
+                            <div class="servant-presentation successful">
+                                <div class="character-silhouette servant"></div>
+                                <div class="reward-text">Well Done!</div>
+                                <div class="talents-result">10 Talents</div>
+                            </div>
+                            <div class="servant-presentation successful">
+                                <div class="character-silhouette servant"></div>
+                                <div class="reward-text">Well Done!</div>
+                                <div class="talents-result">4 Talents</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scene 5: The Unfaithful Servant -->
+        <section id="scene5" class="section parable-scene">
+            <div class="scene-content">
+                <div class="verse-display">
+                    <h3 class="verse-number">Verses 24-30</h3>
+                    <p class="verse-text">
+                        "He also who had received the one talent came forward, saying, 
+                        'Master, I knew you to be a hard man... so I was afraid, and I went and hid your talent.'
+                        But his master answered him, 'You wicked and slothful servant!'..."
+                    </p>
+                </div>
+                <div class="scene-visual">
+                    <div class="judgment-scene dark">
+                        <div class="unfaithful-servant">
+                            <div class="character-silhouette servant condemned"></div>
+                            <div class="condemnation-text">Wicked and Slothful</div>
+                            <div class="darkness-effect"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Message Takeaway -->
+        <section id="message" class="section">
+            <div class="message-container">
+                <h2 class="message-title">The Sacred Trust</h2>
+                <div class="message-content">
+                    <p class="key-message">
+                        Seek to please, obey, and trust God with all He has invested in you, 
+                        or lose everything - including all God invested in you and yourself.
+                    </p>
+                    <div class="talent-value">
+                        <h3>Did You Know?</h3>
+                        <p>
+                            A talent was a monetary unit worth about <strong>twenty years' wages</strong> for a laborer. 
+                            JESUS, imagine that! The loss today would be worth more than a whole life of wages - 
+                            then you lose yourself too.
+                        </p>
+                    </div>
+                    <div class="warning-message">
+                        <p class="emphasis-text">
+                            The risk is too, too high. The risk of total loss ain't worth it.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Closing -->
+        <section id="closing" class="section">
+            <div class="closing-content">
+                <h2 class="closing-title">Until Next Time...</h2>
+                <p class="closing-message">
+                    Join us next time as we take another trip in the WORD OF GOD<br>
+                    <em>Joyfully Living Following God</em>
+                </p>
+            </div>
+        </section>
+
+        <!-- Thanksgiving Message -->
+        <section id="thanksgiving" class="section">
+            <div class="thanksgiving-container">
+                <div class="thanksgiving-graphics">
+                    <h1 class="thanksgiving-title">
+                        HAPPY THANKSGIVING<br>
+                        <span class="everyone">EVERYONE EVERYBODY</span>
+                    </h1>
+                    <h2 class="ministry-signature">
+                        from Jacqueline Worsley Ministries<br>
+                        Joyfully Living Following God
+                    </h2>
+                    <div class="thanksgiving-message">
+                        <p class="lifestyle-message">
+                            Thanksgiving is a lifestyle<br>
+                            not just a one day celebration.
+                        </p>
+                        <div class="hashtag">
+                            #thankGodeverydayallthetime<br>fromwhomallblessingsflow
+                        </div>
+                        <p class="blessing-message">
+                            Take Care and May God Bless You<br>
+                            With His Choice Blessings.
+                        </p>
+                    </div>
+                    <div class="final-message">
+                        <h1 class="god-first">GOD FIRST</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="navigation">
+        <button class="nav-btn prev-btn" onclick="previousSection()">‹</button>
+        <div class="progress-indicator">
+            <div class="progress-bar"></div>
+        </div>
+        <button class="nav-btn next-btn" onclick="nextSection()">›</button>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button class="audio-btn" onclick="toggleAudio()">🔊</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

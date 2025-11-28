@@ -1,0 +1,1200 @@
+/* Jacqueline Worsley Ministries - Cinematic Website Styles */
+
+:root {
+    --gold: #FFD700;
+    --dark-gold: #B8860B;
+    --crimson: #DC143C;
+    --dark-crimson: #8B0000;
+    --cream: #FFF8DC;
+    --off-white: #FFFEF7;
+    --black-overlay: rgba(0, 0, 0, 0.7);
+    --gold-overlay: rgba(255, 215, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Open Sans', sans-serif;
+    background: linear-gradient(135deg, var(--cream) 0%, var(--off-white) 50%, var(--gold) 100%);
+    color: var(--dark-crimson);
+}
+
+/* Main Container */
+.main-container {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Section Base Styles */
+.section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 1.5s ease-in-out;
+    background: radial-gradient(ellipse at center, var(--gold-overlay) 0%, transparent 70%);
+}
+
+.section.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.section.prev {
+    transform: translateX(-100%);
+}
+
+/* Cinematic Overlay */
+.cinematic-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        var(--black-overlay) 0%,
+        transparent 30%,
+        transparent 70%,
+        var(--black-overlay) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Introduction Section */
+#intro {
+    background: linear-gradient(
+        135deg,
+        var(--crimson) 0%,
+        var(--dark-crimson) 30%,
+        var(--gold) 70%,
+        var(--cream) 100%
+    );
+    text-align: center;
+    position: relative;
+}
+
+.intro-content {
+    z-index: 2;
+    position: relative;
+    max-width: 800px;
+    padding: 2rem;
+}
+
+.ministry-logo {
+    margin-bottom: 3rem;
+    animation: fadeInUp 2s ease-out;
+}
+
+.ministry-title {
+    font-family: 'Cinzel', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+}
+
+.golden-text {
+    color: var(--gold);
+    display: block;
+    text-shadow: 2px 2px 4px var(--dark-crimson);
+}
+
+.crimson-text {
+    color: var(--cream);
+    display: block;
+    text-shadow: 2px 2px 4px var(--dark-gold);
+}
+
+.subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--cream);
+    font-style: italic;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.intro-text {
+    margin: 3rem 0;
+    animation: fadeInUp 2s ease-out 0.5s both;
+}
+
+.welcome-message {
+    font-size: 1.3rem;
+    line-height: 1.8;
+    color: var(--cream);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.continue-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+    color: var(--dark-crimson);
+    border: 3px solid var(--cream);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 2s ease-out 1s both;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.continue-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, var(--cream), var(--gold));
+}
+
+/* Golden Particles Animation */
+.golden-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.golden-particles::before,
+.golden-particles::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: float 8s infinite ease-in-out;
+}
+
+.golden-particles::before {
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.golden-particles::after {
+    top: 60%;
+    right: 15%;
+    animation-delay: 4s;
+}
+
+/* Parable Introduction */
+#parable-intro {
+    background: linear-gradient(
+        180deg,
+        var(--dark-crimson) 0%,
+        var(--crimson) 50%,
+        var(--gold) 100%
+    );
+    text-align: center;
+}
+
+.parable-title-card {
+    z-index: 2;
+    position: relative;
+    padding: 2rem;
+    animation: zoomIn 2s ease-out;
+}
+
+.parable-title {
+    font-family: 'Cinzel', serif;
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    margin-bottom: 1rem;
+}
+
+.parable-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--cream);
+    font-style: italic;
+    margin-bottom: 2rem;
+}
+
+.parable-introduction {
+    font-size: 1.4rem;
+    color: var(--cream);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.8;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Parable Scenes */
+.parable-scene {
+    background: linear-gradient(
+        45deg,
+        var(--cream) 0%,
+        var(--off-white) 30%,
+        var(--gold) 70%,
+        var(--dark-gold) 100%
+    );
+    padding: 2rem;
+}
+
+.scene-content {
+    z-index: 2;
+    position: relative;
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.verse-display {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    border: 3px solid var(--gold);
+}
+
+.verse-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    color: var(--crimson);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.verse-text {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--dark-crimson);
+    font-style: italic;
+}
+
+/* Character Animations */
+.scene-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.character-silhouette {
+    width: 100px;
+    height: 140px;
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    border-radius: 15px;
+    position: relative;
+    margin: 1rem;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    border: 3px solid var(--gold);
+    animation: characterBreathe 3s ease-in-out infinite, characterSway 4s ease-in-out infinite;
+    overflow: hidden;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Real people images for servants - diverse realistic portraits */
+.character-silhouette.faithful-servant-1 {
+    background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face&auto=format');
+    background-size: cover;
+    background-position: center;
+}
+
+.character-silhouette.faithful-servant-2 {
+    background-image: url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=500&fit=crop&crop=face&auto=format');
+    background-size: cover;
+    background-position: center;
+}
+
+.character-silhouette.lazy-servant {
+    background-image: url('https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=500&fit=crop&crop=face&auto=format');
+    background-size: cover;
+    background-position: center;
+}
+
+.character-silhouette.servant.fearful {
+    filter: grayscale(50%) brightness(0.7) sepia(20%);
+    border-color: #8b4513;
+    animation: servantFear 1.5s ease-in-out infinite, characterSway 4s ease-in-out infinite;
+}
+
+.character-silhouette.servant.condemned {
+    filter: grayscale(80%) brightness(0.4) contrast(0.8);
+    border-color: #333;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8);
+}
+
+.character-silhouette::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, var(--gold) 0%, var(--dark-gold) 100%);
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+    border: 2px solid var(--cream);
+}
+
+.master {
+    background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop&crop=face&auto=format');
+    background-size: cover;
+    background-position: center;
+    width: 120px;
+    height: 160px;
+    border: 4px solid var(--crimson);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    animation: masterPresence 4s ease-in-out infinite, characterBreathe 3s ease-in-out infinite;
+    position: relative;
+}
+
+.master::after {
+    content: '👑';
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2rem;
+    animation: crownGlow 3s ease-in-out infinite;
+}
+
+@keyframes crownGlow {
+    0%, 100% { 
+        filter: drop-shadow(0 0 5px var(--gold));
+    }
+    50% { 
+        filter: drop-shadow(0 0 15px var(--gold)) drop-shadow(0 0 25px var(--gold));
+    }
+}
+
+.master::before {
+    background: radial-gradient(circle, var(--crimson) 0%, var(--dark-crimson) 100%);
+    width: 60px;
+    height: 60px;
+    border: 3px solid var(--gold);
+}
+
+.master-judge {
+    background-image: url('https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=500&fit=crop&crop=face&auto=format');
+    background-size: cover;
+    background-position: center;
+    width: 140px;
+    height: 180px;
+    border: 5px solid var(--gold);
+    animation: judgeAuthority 3s ease-in-out infinite;
+    position: relative;
+}
+
+.master-judge::after {
+    content: '⚖️';
+    position: absolute;
+    top: -30px;
+    right: -20px;
+    font-size: 2rem;
+    animation: scaleBalance 2s ease-in-out infinite;
+}
+
+@keyframes scaleBalance {
+    0%, 100% { 
+        transform: rotate(-5deg) scale(1);
+    }
+    50% { 
+        transform: rotate(5deg) scale(1.1);
+    }
+}
+
+.servant.active {
+    animation: characterBreathe 3s ease-in-out infinite, servantWork 2s ease-in-out infinite, characterSway 4s ease-in-out infinite;
+    border-color: var(--gold);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.servant.active::after {
+    content: '💼';
+    position: absolute;
+    top: -20px;
+    right: -15px;
+    font-size: 1.5rem;
+    animation: workIndicator 1.5s ease-in-out infinite;
+}
+
+@keyframes workIndicator {
+    0%, 100% { 
+        transform: rotate(-10deg) scale(1);
+    }
+    50% { 
+        transform: rotate(10deg) scale(1.2);
+    }
+}
+
+.servant.fearful {
+    filter: grayscale(50%) brightness(0.7);
+    animation: servantFear 1.5s ease-in-out infinite, characterSway 4s ease-in-out infinite;
+    border-color: #666;
+}
+
+.servant.condemned {
+    background: linear-gradient(180deg, #333, #000);
+    opacity: 0.7;
+}
+
+/* Talents Display */
+.talents-display {
+    background: var(--gold);
+    color: var(--dark-crimson);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--cream);
+}
+
+.servants-group {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.servant-container {
+    text-align: center;
+}
+
+.character-label {
+    margin-top: 1rem;
+    font-weight: 600;
+    color: var(--dark-crimson);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.work-label {
+    margin-top: 0.5rem;
+    font-weight: bold;
+    color: var(--gold);
+    font-size: 0.8rem;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.fear-label {
+    margin-top: 1rem;
+    font-style: italic;
+    color: var(--crimson);
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Trading Animation */
+.trading-animation {
+    display: flex;
+    gap: 3rem;
+    align-items: center;
+}
+
+.servant-working {
+    text-align: center;
+    position: relative;
+}
+
+.multiplication-effect {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--dark-crimson);
+}
+
+.original-talents, .result-talents {
+    background: var(--gold);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.result-talents {
+    background: var(--crimson);
+    color: var(--gold);
+    animation: pulse 2s ease-in-out infinite 0.5s;
+}
+
+.multiply-symbol {
+    color: var(--dark-crimson);
+    font-size: 2.5rem;
+}
+
+/* Hiding Scene */
+.hiding-scene {
+    text-align: center;
+    position: relative;
+}
+
+.buried-talent {
+    margin-top: 2rem;
+    position: relative;
+    width: 200px;
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ground-layer {
+    width: 100%;
+    height: 60px;
+    background: linear-gradient(180deg, #8B4513, #654321);
+    border-radius: 10px;
+    position: absolute;
+    bottom: 0;
+}
+
+.hidden-treasure {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--dark-crimson);
+    border: 3px solid var(--cream);
+    opacity: 0.7;
+    animation: buried 3s ease-in-out infinite;
+}
+
+/* Judgment Scenes */
+.judgment-scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+.master-judge {
+    width: 120px;
+    height: 160px;
+    background: linear-gradient(180deg, var(--gold), var(--dark-gold));
+    position: relative;
+}
+
+.master-judge::before {
+    background: var(--crimson);
+    width: 50px;
+    height: 50px;
+}
+
+.faithful-servants {
+    display: flex;
+    gap: 3rem;
+}
+
+.servant-presentation {
+    text-align: center;
+}
+
+.servant-presentation.successful .character-silhouette {
+    background: linear-gradient(180deg, var(--gold), var(--dark-gold));
+    animation: celebration 2s ease-in-out infinite;
+}
+
+.reward-text {
+    margin: 1rem 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--gold);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.talents-result {
+    background: var(--crimson);
+    color: var(--gold);
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.judgment-scene.dark {
+    background: radial-gradient(circle, rgba(139, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 100%);
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.unfaithful-servant {
+    text-align: center;
+    position: relative;
+}
+
+.condemnation-text {
+    margin: 1rem 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--crimson);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.darkness-effect {
+    position: absolute;
+    top: 0;
+    left: -50px;
+    right: -50px;
+    bottom: 0;
+    background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.8) 70%);
+    border-radius: 50%;
+    animation: darknessPulse 3s ease-in-out infinite;
+}
+
+/* Message Section */
+#message {
+    background: linear-gradient(
+        135deg,
+        var(--crimson) 0%,
+        var(--dark-crimson) 30%,
+        var(--gold) 70%,
+        var(--cream) 100%
+    );
+    text-align: center;
+}
+
+.message-container {
+    z-index: 2;
+    position: relative;
+    max-width: 800px;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    border: 4px solid var(--gold);
+}
+
+.message-title {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    color: var(--crimson);
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.message-content {
+    line-height: 1.8;
+}
+
+.key-message {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--dark-crimson);
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+.talent-value {
+    background: var(--gold);
+    padding: 1.5rem;
+    border-radius: 15px;
+    margin: 2rem 0;
+    border: 2px solid var(--crimson);
+}
+
+.talent-value h3 {
+    color: var(--dark-crimson);
+    margin-bottom: 1rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+}
+
+.talent-value p {
+    color: var(--dark-crimson);
+    font-size: 1.1rem;
+}
+
+.warning-message {
+    margin-top: 2rem;
+}
+
+.emphasis-text {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--crimson);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Closing Section */
+#closing {
+    background: linear-gradient(
+        45deg,
+        var(--dark-gold) 0%,
+        var(--gold) 50%,
+        var(--cream) 100%
+    );
+    text-align: center;
+}
+
+.closing-content {
+    z-index: 2;
+    position: relative;
+    padding: 2rem;
+}
+
+.closing-title {
+    font-family: 'Cinzel', serif;
+    font-size: 3rem;
+    color: var(--crimson);
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.closing-message {
+    font-size: 1.4rem;
+    color: var(--dark-crimson);
+    line-height: 2;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Thanksgiving Section */
+#thanksgiving {
+    background: linear-gradient(
+        135deg,
+        var(--gold) 0%,
+        var(--cream) 30%,
+        var(--crimson) 70%,
+        var(--dark-crimson) 100%
+    );
+    text-align: center;
+}
+
+.thanksgiving-container {
+    z-index: 2;
+    position: relative;
+    max-width: 900px;
+    padding: 2rem;
+}
+
+.thanksgiving-graphics {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 3rem;
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    border: 5px solid var(--gold);
+}
+
+.thanksgiving-title {
+    font-family: 'Cinzel', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--crimson);
+    margin-bottom: 1.5rem;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+    line-height: 1.2;
+}
+
+.everyone {
+    color: var(--gold);
+    text-shadow: 2px 2px 4px var(--dark-crimson);
+}
+
+.ministry-signature {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--dark-crimson);
+    margin-bottom: 2rem;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.thanksgiving-message {
+    margin: 2rem 0;
+}
+
+.lifestyle-message {
+    font-size: 1.4rem;
+    color: var(--dark-crimson);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.hashtag {
+    background: var(--gold);
+    color: var(--dark-crimson);
+    padding: 1rem 1.5rem;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 1.5rem 0;
+    border: 2px solid var(--crimson);
+    line-height: 1.4;
+}
+
+.blessing-message {
+    font-size: 1.3rem;
+    color: var(--dark-crimson);
+    line-height: 1.8;
+    margin: 2rem 0;
+}
+
+.final-message {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 3px solid var(--gold);
+}
+
+.god-first {
+    font-family: 'Cinzel', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: var(--crimson);
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    animation: finalGlow 3s ease-in-out infinite;
+    letter-spacing: 3px;
+}
+
+/* Navigation */
+.navigation {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 0.2rem 0.6rem;
+    border-radius: 36px;
+    border: 2px solid var(--gold);
+}
+
+.nav-btn {
+    background: var(--gold);
+    color: var(--dark-crimson);
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 1.0rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn:hover {
+    background: var(--cream);
+    transform: scale(1.1);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.progress-indicator {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--crimson));
+    width: 0%;
+    transition: width 1.5s ease;
+    border-radius: 2px;
+}
+
+/* Audio Controls */
+.audio-controls {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    z-index: 1000;
+}
+
+.audio-btn {
+    background: var(--gold);
+    border: 2px solid var(--crimson);
+    color: var(--dark-crimson);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.audio-btn:hover {
+    background: var(--cream);
+    transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(-100px) translateX(50px);
+        opacity: 1;
+    }
+}
+
+@keyframes characterBreathe {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes characterSway {
+    0%, 100% {
+        transform: rotate(0deg) translateX(0px);
+    }
+    25% {
+        transform: rotate(-1deg) translateX(-2px);
+    }
+    75% {
+        transform: rotate(1deg) translateX(2px);
+    }
+}
+
+@keyframes masterPresence {
+    0%, 100% {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 20px var(--gold);
+    }
+    50% {
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 30px var(--gold);
+    }
+}
+
+@keyframes judgeAuthority {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 25px var(--crimson);
+    }
+}
+
+@keyframes servantWork {
+    0%, 100% {
+        transform: translateX(0) rotate(0deg);
+    }
+    25% {
+        transform: translateX(-5px) rotate(-2deg);
+    }
+    75% {
+        transform: translateX(5px) rotate(2deg);
+    }
+}
+
+@keyframes servantFear {
+    0%, 100% {
+        transform: scale(1) translateX(0);
+    }
+    25% {
+        transform: scale(0.95) translateX(-3px);
+    }
+    75% {
+        transform: scale(0.95) translateX(3px);
+    }
+}
+
+@keyframes workingMotion {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+    }
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+@keyframes fearfulTremble {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-3px);
+    }
+    75% {
+        transform: translateX(3px);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+}
+
+@keyframes buried {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    50% {
+        transform: translateX(-50%) translateY(-10px);
+    }
+}
+
+@keyframes celebration {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    75% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+@keyframes darknessPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes finalGlow {
+    0%, 100% {
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    50% {
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4), 0 0 20px var(--gold), 0 0 40px var(--gold);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .ministry-title {
+        font-size: 2.5rem;
+    }
+    
+    .subtitle {
+        font-size: 1.5rem;
+    }
+    
+    .scene-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .thanksgiving-title {
+        font-size: 2.5rem;
+    }
+    
+    .god-first {
+        font-size: 2.5rem;
+    }
+    
+    .navigation {
+        bottom: 20px;
+        padding: 0.5rem 1rem;
+    }
+    
+    .progress-indicator {
+        width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ministry-title {
+        font-size: 2rem;
+    }
+    
+    .parable-title {
+        font-size: 2.5rem;
+    }
+    
+    .thanksgiving-title {
+        font-size: 2rem;
+    }
+    
+    .god-first {
+        font-size: 2rem;
+    }
+}
