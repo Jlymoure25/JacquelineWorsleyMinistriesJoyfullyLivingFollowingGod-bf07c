@@ -36,16 +36,16 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Initialize SoundCloud player (audio will start on user interaction)
+        // Initialize SoundCloud player and start audio immediately
         this.initializeSoundCloudPlayer();
+        
+        // Start background music automatically
+        setTimeout(() => {
+            this.startBackgroundMusic();
+        }, 1000);
         
         // Start with a cinematic entrance
         this.playIntroductionSequence();
-        
-        // Make startBackgroundAudio globally available
-        window.startBackgroundAudio = () => {
-            this.startBackgroundMusic();
-        };
         
         console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
     }
@@ -79,7 +79,7 @@ class CinematicWebsite {
                         console.log('SoundCloud Widget API ready - enforcing 17% volume with full API controls');
                         this.scWidget.setVolume(17); // Widget API: 17% volume control
                         this.scWidget.seekTo(0); // Widget API: seekTo(0) command
-                        // Don't auto-play here, wait for user interaction
+                        this.scWidget.play(); // Auto-play immediately
                         this.scWidget.getDuration((duration) => {
                             console.log('Audio duration:', duration, 'ms');
                         });
@@ -663,6 +663,12 @@ class CinematicWebsite {
     }
 
     displayWelcomeMessage() {
+        // Ensure voices are loaded before starting narration
+        if (speechSynthesis.getVoices().length === 0) {
+            setTimeout(() => this.displayWelcomeMessage(), 500);
+            return;
+        }
+        
         // Natural, warm voice introduction with actual narration
         const messages = [
             "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.",
@@ -721,7 +727,8 @@ class CinematicWebsite {
             }
         };
         
-        setTimeout(showMessage, 1000);
+        // Start immediately without waiting
+        showMessage();
     }
     
     getNarratorVoice() {
