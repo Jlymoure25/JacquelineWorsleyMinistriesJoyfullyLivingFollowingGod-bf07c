@@ -8,8 +8,13 @@
 
 ### 🚀 Alternative Deployment Options:
 - **GitHub Pages**: [jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod](https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)
-- **Netlify**: Deploy directly from this repository to Netlify
+- **Netlify**: [Deploy from GitHub](https://app.netlify.com/start/deploy?repository=https://github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod) 
 - **Vercel**: One-click deployment available
+
+### 🔧 Netlify Deployment:
+1. **Quick Deploy**: [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)
+2. **Manual Setup**: See [NETLIFY_DEPLOY.md](NETLIFY_DEPLOY.md) for detailed instructions
+3. **Expected URL**: `https://jlymoure25.netlify.app` (after connecting repository)
 
 ## ✨ Features
 
