@@ -4,7 +4,12 @@
 
 ## 🌐 Live Website
 
-**[Visit Live Site](https://jlymoure25.netlify.app)** | **[GitHub Repository](https://github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)**
+**[Visit Live Site](https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)** | **[GitHub Repository](https://github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)**
+
+### 🚀 Alternative Deployment Options:
+- **GitHub Pages**: [jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod](https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)
+- **Netlify**: Deploy directly from this repository to Netlify
+- **Vercel**: One-click deployment available
 
 ## ✨ Features
 
@@ -252,8 +257,8 @@ Platform: SoundCloud
 Link: [soundcloud.com/smoothjazzallstars/we-belong-together-3](https://soundcloud.com/smoothjazzallstars/we-belong-together-3)
 
 ### 🚀 Deployment & Sharing:
-- **Live Site**: [jlymoure25.netlify.app](https://jlymoure25.netlify.app)
-- **GitHub**: [github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod](https://github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)
+- **GitHub Pages**: [jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod](https://jlymoure25.github.io/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)
+- **GitHub Repository**: [github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod](https://github.com/Jlymoure25/JacquelineWorsleyMinistriesJoyfullyLivingFollowingGod)
 - **Social Sharing**: Optimized for Facebook, Twitter, LinkedIn, Pinterest
 
 ---
