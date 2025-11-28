@@ -15,6 +15,7 @@ class CinematicWebsite {
         this.isPaused = false; // Start playing automatically
         this.soundcloudPlayer = null;
         this.fadeInterval = null;
+        this.narratorVoice = null; // Store consistent narrator voice
         this.init();
     }
 
@@ -35,11 +36,16 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Initialize SoundCloud player and start audio immediately
+        // Initialize SoundCloud player (audio will start on user interaction)
         this.initializeSoundCloudPlayer();
         
         // Start with a cinematic entrance
         this.playIntroductionSequence();
+        
+        // Make startBackgroundAudio globally available
+        window.startBackgroundAudio = () => {
+            this.startBackgroundMusic();
+        };
         
         console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
     }
@@ -52,6 +58,9 @@ class CinematicWebsite {
             speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
                 console.log('Speech synthesis voices loaded');
+                // Reset narrator voice to ensure consistency
+                this.narratorVoice = null;
+                this.getNarratorVoice();
             };
         }
         
@@ -60,20 +69,26 @@ class CinematicWebsite {
         if (this.soundcloudPlayer) {
             console.log('SoundCloud player reference established');
             
-            // Try to access SoundCloud Widget API for comprehensive 17% volume control
-            if (typeof SC !== 'undefined' && SC.Widget) {
-                this.scWidget = SC.Widget(this.soundcloudPlayer);
-                
-                // Comprehensive Widget API event binding for full control
-                this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget API ready - enforcing 17% volume with full API controls');
-                    this.scWidget.setVolume(17); // Widget API: 17% volume control
-                    this.scWidget.seekTo(0); // Widget API: seekTo(0) command
-                    this.scWidget.play(); // Widget API: play() command
-                    this.scWidget.getDuration((duration) => {
-                        console.log('Audio duration:', duration, 'ms');
+            // Initialize SoundCloud Widget API with delayed setup
+            setTimeout(() => {
+                if (typeof SC !== 'undefined' && SC.Widget) {
+                    this.scWidget = SC.Widget(this.soundcloudPlayer);
+                    
+                    // Comprehensive Widget API event binding for full control
+                    this.scWidget.bind(SC.Widget.Events.READY, () => {
+                        console.log('SoundCloud Widget API ready - enforcing 17% volume with full API controls');
+                        this.scWidget.setVolume(17); // Widget API: 17% volume control
+                        this.scWidget.seekTo(0); // Widget API: seekTo(0) command
+                        // Don't auto-play here, wait for user interaction
+                        this.scWidget.getDuration((duration) => {
+                            console.log('Audio duration:', duration, 'ms');
+                        });
                     });
-                });
+                } else {
+                    console.log('SoundCloud Widget API not available, retrying...');
+                    setTimeout(() => this.setupAudio(), 1000);
+                }
+            }, 500);
                 
                 // Volume control on play events
                 this.scWidget.bind(SC.Widget.Events.PLAY, () => {
@@ -309,16 +324,20 @@ class CinematicWebsite {
     }
     
     startBackgroundMusic() {
-        // SoundCloud player with 2-minute fade-in effect
-        console.log('Starting background music with 2-minute fade-in');
-        if (this.soundcloudPlayer) {
+        // SoundCloud player with immediate play and fade-in effect
+        console.log('Starting background music with user interaction');
+        if (this.soundcloudPlayer && this.scWidget) {
+            // Start playing immediately with user interaction
+            this.scWidget.play();
+            this.scWidget.setVolume(17);
             this.fadeInAudio();
-            console.log('SoundCloud "We Belong Together (Instrumental)" starting 2-minute fade-in');
+            console.log('SoundCloud "We Belong Together (Instrumental)" starting with fade-in');
             this.isAudioPlaying = true;
             const audioBtn = document.querySelector('.audio-btn');
             if (audioBtn) audioBtn.textContent = '🔊';
         } else {
-            console.log('SoundCloud player not found, using fallback');
+            console.log('SoundCloud player not ready, initializing...');
+            setTimeout(() => this.startBackgroundMusic(), 1000);
             if (this.ambientAudio) {
                 this.ambientAudio.play();
             }
@@ -705,6 +724,27 @@ class CinematicWebsite {
         setTimeout(showMessage, 1000);
     }
     
+    getNarratorVoice() {
+        if (!this.narratorVoice) {
+            const voices = speechSynthesis.getVoices();
+            this.narratorVoice = voices.find(voice => 
+                (voice.name.toLowerCase().includes('samantha') ||
+                voice.name.toLowerCase().includes('karen') ||
+                voice.name.toLowerCase().includes('susan') ||
+                voice.name.toLowerCase().includes('victoria') ||
+                voice.name.toLowerCase().includes('female')) &&
+                voice.lang.startsWith('en')
+            ) || voices.find(voice => 
+                voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
+            ) || voices.find(voice => voice.lang.startsWith('en'));
+            
+            if (this.narratorVoice) {
+                console.log('Narrator voice selected:', this.narratorVoice.name);
+            }
+        }
+        return this.narratorVoice;
+    }
+
     speakText(text, onComplete = null) {
         // Text-to-speech narration with natural joyful settings
         if ('speechSynthesis' in window) {
@@ -716,21 +756,10 @@ class CinematicWebsite {
             utterance.pitch = 1.1;  // Slight uplift for warmth while staying natural
             utterance.volume = 1.0;  // Maximum volume with natural delivery
             
-            // Use consistent warm, natural female voice for all narration
-            const voices = speechSynthesis.getVoices();
-            const naturalVoice = voices.find(voice => 
-                (voice.name.toLowerCase().includes('samantha') ||
-                voice.name.toLowerCase().includes('karen') ||
-                voice.name.toLowerCase().includes('susan') ||
-                voice.name.toLowerCase().includes('victoria') ||
-                voice.name.toLowerCase().includes('female')) &&
-                voice.lang.startsWith('en')
-            ) || voices.find(voice => 
-                voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
-            ) || voices.find(voice => voice.lang.startsWith('en'));
-            
-            if (naturalVoice) {
-                utterance.voice = naturalVoice;
+            // Use consistent narrator voice for ALL narration
+            const narratorVoice = this.getNarratorVoice();
+            if (narratorVoice) {
+                utterance.voice = narratorVoice;
             }
             
             this.isNarrating = true;
