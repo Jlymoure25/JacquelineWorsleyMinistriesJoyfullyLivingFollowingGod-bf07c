@@ -49,7 +49,37 @@ class CinematicWebsite {
     }
     
     setupAudio() {
+        // Set up HTML5 audio that actually works
+        this.backgroundAudio = document.getElementById('background-audio');
         this.soundcloudPlayer = document.getElementById('soundcloud-player');
+        
+        if (this.backgroundAudio) {
+            this.backgroundAudio.volume = 0.17; // 17% volume
+            this.backgroundAudio.loop = true;
+            
+            // Force play immediately
+            const startAudio = () => {
+                this.backgroundAudio.play().then(() => {
+                    console.log('HTML5 audio started successfully at 17% volume');
+                    this.isAudioPlaying = true;
+                }).catch(e => {
+                    console.log('HTML5 audio blocked, will start on user interaction:', e);
+                });
+            };
+            
+            // Try to start immediately
+            startAudio();
+            
+            // Also try on any user interaction
+            const forceStart = () => {
+                startAudio();
+                document.removeEventListener('click', forceStart);
+                document.removeEventListener('keydown', forceStart);
+            };
+            
+            document.addEventListener('click', forceStart, { once: true });
+            document.addEventListener('keydown', forceStart, { once: true });
+        }
         
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
@@ -62,8 +92,8 @@ class CinematicWebsite {
             };
         }
         
-        // Initialize SoundCloud Widget API with aggressive auto-start
-        console.log('Setting up SoundCloud Widget...');
+        // Keep SoundCloud as backup
+        console.log('Setting up SoundCloud Widget as backup...');
         
         // Wait for SoundCloud API to be fully loaded
         const initSoundCloud = () => {
@@ -274,8 +304,27 @@ class CinematicWebsite {
     }
 
     startBackgroundMusic() {
-        console.log('Background music started via SoundCloud');
-        // Music is handled by SoundCloud widget
+        // Force HTML5 audio to play
+        if (this.backgroundAudio) {
+            this.backgroundAudio.volume = 0.17;
+            this.backgroundAudio.play().then(() => {
+                console.log('Background music started via HTML5 audio at 17% volume');
+                this.isAudioPlaying = true;
+            }).catch(e => {
+                console.log('Background music blocked, trying SoundCloud backup');
+                // Try SoundCloud backup
+                if (this.scWidget) {
+                    this.scWidget.play();
+                    this.scWidget.setVolume(17);
+                }
+            });
+        } else {
+            console.log('No HTML5 audio found, using SoundCloud only');
+            if (this.scWidget) {
+                this.scWidget.play();
+                this.scWidget.setVolume(17);
+            }
+        }
     }
 
     initializeSoundCloudPlayer() {
