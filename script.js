@@ -37,15 +37,13 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Initialize SoundCloud player first
+        // Start SoundCloud and narrator voice together - IMMEDIATE auto-start
+        this.playIntroductionSequence();
+        
+        // Initialize SoundCloud player
         this.initializeSoundCloudPlayer();
         
-        // Start with a cinematic entrance - IMMEDIATE auto-start
-        setTimeout(() => {
-            this.playIntroductionSequence();
-        }, 500);
-        
-        console.log('Jacqueline Worsley Ministries website initialized with IMMEDIATE auto-start');
+        console.log('Jacqueline Worsley Ministries website initialized with synchronized auto-start');
     }
     
     setupAudio() {
@@ -89,15 +87,11 @@ class CinematicWebsite {
     }
 
     playIntroductionSequence() {
-        console.log('Starting introduction sequence');
+        console.log('Starting synchronized introduction sequence');
         
-        // Start background music immediately
+        // Start SoundCloud and narrator voice at EXACTLY the same time
         this.startBackgroundMusic();
-        
-        // Start introductory narrator voice after 2 seconds
-        setTimeout(() => {
-            this.startIntroductoryNarration();
-        }, 2000);
+        this.startIntroductoryNarration();
     }
     
     startIntroductoryNarration() {
