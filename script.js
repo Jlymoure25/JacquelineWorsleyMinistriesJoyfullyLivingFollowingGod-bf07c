@@ -40,8 +40,7 @@ class CinematicWebsite {
         // Start SoundCloud and narrator voice together - IMMEDIATE auto-start
         this.playIntroductionSequence();
         
-        // Initialize SoundCloud player
-        this.initializeSoundCloudPlayer();
+        // SoundCloud already initialized in setupAudio()
         
         console.log('Jacqueline Worsley Ministries website initialized with synchronized auto-start');
     }
@@ -60,30 +59,8 @@ class CinematicWebsite {
             };
         }
         
-        // Initialize SoundCloud Widget API ONLY
-        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-            this.scWidget = SC.Widget(this.soundcloudPlayer);
-            
-            this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
-            });
-            
-            // Enable looping when track finishes
-            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - restarting for loop');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-            });
-            
-            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                this.scWidget.setVolume(17);
-            });
-        }
+        // Force SoundCloud Widget initialization with retry
+        this.initializeSoundCloudWidget();
     }
 
     playIntroductionSequence() {
@@ -242,15 +219,65 @@ class CinematicWebsite {
         return this.narratorVoice;
     }
 
-    startBackgroundMusic() {
-        console.log('Background music started via SoundCloud');
-        // Music is handled by SoundCloud widget
+    initializeSoundCloudWidget() {
+        console.log('Forcing SoundCloud Widget initialization...');
+        
+        const attemptInit = () => {
+            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+                console.log('SoundCloud API available - creating widget');
+                this.scWidget = SC.Widget(this.soundcloudPlayer);
+                
+                this.scWidget.bind(SC.Widget.Events.READY, () => {
+                    console.log('SoundCloud Widget READY - starting immediately');
+                    this.scWidget.setVolume(17);
+                    this.scWidget.play();
+                    this.isAudioPlaying = true;
+                    
+                    // Force multiple play attempts
+                    setTimeout(() => this.scWidget.play(), 500);
+                    setTimeout(() => this.scWidget.play(), 1000);
+                    setTimeout(() => this.scWidget.play(), 2000);
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                    console.log('Track finished - looping');
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                    this.scWidget.setVolume(17);
+                    console.log('SoundCloud playing at 17% volume');
+                });
+                
+                return true;
+            } else {
+                console.log('SoundCloud API not ready yet...');
+                return false;
+            }
+        };
+        
+        // Try immediately
+        if (!attemptInit()) {
+            // Retry every 500ms until it works
+            const retryInterval = setInterval(() => {
+                if (attemptInit()) {
+                    clearInterval(retryInterval);
+                    console.log('SoundCloud Widget initialized successfully');
+                }
+            }, 500);
+        }
     }
 
-    initializeSoundCloudPlayer() {
-        // Already handled in setupAudio()
-        console.log('SoundCloud player initialization handled in setupAudio');
+    startBackgroundMusic() {
+        console.log('Starting background music via SoundCloud');
+        if (this.scWidget) {
+            this.scWidget.setVolume(17);
+            this.scWidget.play();
+        }
     }
+
+    // SoundCloud initialization moved to setupAudio()
 
     setupNavigation() {
         // Navigation buttons
