@@ -486,14 +486,14 @@ class CinematicWebsite {
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                background: linear-gradient(45deg, rgba(220, 20, 60, 0.95), rgba(139, 0, 0, 0.95));
-                color: #FFD700;
+                background: linear-gradient(45deg, rgba(204, 85, 0, 0.95), rgba(139, 69, 19, 0.95));
+                color: #F5F5DC;
                 padding: 40px 60px;
                 border-radius: 30px;
                 font-size: 2rem;
                 font-weight: 700;
                 z-index: 4000;
-                border: 4px solid #FFD700;
+                border: 4px solid #F5F5DC;
                 box-shadow: 0 25px 60px rgba(0,0,0,0.8);
                 text-align: center;
                 font-family: 'Playfair Display', serif;
@@ -538,21 +538,16 @@ class CinematicWebsite {
     handleFinalEnding() {
         console.log('Handling final ending sequence');
         
-        // Start audio fade out immediately after thank you narration completes
-        console.log('Starting audio fade out');
+        // Start audio fade and website fade simultaneously
+        console.log('Starting simultaneous audio fade out and website fade to black');
+        
+        // Start both fades at the same time
         if (this.scWidget) {
-            this.fadeOutSoundCloudAudio(() => {
-                // After audio fades, wait 5 seconds then fade to black
-                setTimeout(() => {
-                    this.fadeToBlackAndShowReplay();
-                }, 5000);
-            });
-        } else {
-            // If no audio widget, just fade to black after 5 seconds
-            setTimeout(() => {
-                this.fadeToBlackAndShowReplay();
-            }, 5000);
+            this.fadeOutSoundCloudAudio();
         }
+        
+        // Fade to black immediately (simultaneously with audio)
+        this.fadeToBlackAndShowReplay();
     }
     
     fadeToBlackAndShowReplay() {
@@ -617,10 +612,10 @@ class CinematicWebsite {
             blackOverlay.style.opacity = '1';
         }, 100);
         
-        // Show button after fade completes
+        // Show button 2 seconds after fade completes (3s fade + 2s wait = 5s total)
         setTimeout(() => {
             replayButton.style.opacity = '1';
-        }, 4000);
+        }, 5000);
     }
     
     restartJourney() {
@@ -668,10 +663,10 @@ class CinematicWebsite {
             return;
         }
         
-        console.log('Starting SoundCloud audio fade-out');
+        console.log('Starting SoundCloud audio fade-out (3 seconds to match website fade)');
         let currentVolume = 17;
         const fadeStep = 1;
-        const fadeInterval = 200; // milliseconds
+        const fadeInterval = 176; // milliseconds (17 steps * 176ms = ~3 seconds)
         
         this.fadeInterval = setInterval(() => {
             currentVolume -= fadeStep;
