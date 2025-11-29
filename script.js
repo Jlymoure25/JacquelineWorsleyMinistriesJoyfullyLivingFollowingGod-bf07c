@@ -220,50 +220,53 @@ class CinematicWebsite {
     }
 
     initializeSoundCloudWidget() {
-        console.log('Forcing SoundCloud Widget initialization...');
+        console.log('Initializing SoundCloud Widget API controls...');
         
         const attemptInit = () => {
             if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                console.log('SoundCloud API available - creating widget');
+                console.log('SoundCloud API available - creating widget with full controls');
                 this.scWidget = SC.Widget(this.soundcloudPlayer);
                 
                 this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget READY - starting immediately');
+                    console.log('SoundCloud Widget API READY - We Belong Together with 17% volume');
                     this.scWidget.setVolume(17);
+                    this.scWidget.seekTo(0);
                     this.scWidget.play();
                     this.isAudioPlaying = true;
-                    
-                    // Force multiple play attempts
-                    setTimeout(() => this.scWidget.play(), 500);
-                    setTimeout(() => this.scWidget.play(), 1000);
-                    setTimeout(() => this.scWidget.play(), 2000);
+                    console.log('SoundCloud auto-started with API controls');
                 });
                 
+                // Enable looping when track finishes
                 this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('Track finished - looping');
+                    console.log('We Belong Together finished - restarting for loop');
                     this.scWidget.seekTo(0);
                     this.scWidget.play();
                 });
                 
                 this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                     this.scWidget.setVolume(17);
-                    console.log('SoundCloud playing at 17% volume');
+                    console.log('SoundCloud playing We Belong Together at 17% volume');
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                    console.log('SoundCloud paused - restarting automatically');
+                    setTimeout(() => this.scWidget.play(), 100);
                 });
                 
                 return true;
             } else {
-                console.log('SoundCloud API not ready yet...');
+                console.log('SoundCloud API not ready yet - waiting...');
                 return false;
             }
         };
         
         // Try immediately
         if (!attemptInit()) {
-            // Retry every 500ms until it works
+            // Retry every 500ms until the API is ready
             const retryInterval = setInterval(() => {
                 if (attemptInit()) {
                     clearInterval(retryInterval);
-                    console.log('SoundCloud Widget initialized successfully');
+                    console.log('SoundCloud Widget API controls initialized successfully');
                 }
             }, 500);
         }
