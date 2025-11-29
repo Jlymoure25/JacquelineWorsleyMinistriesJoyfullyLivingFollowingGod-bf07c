@@ -737,35 +737,64 @@ class CinematicWebsite {
     }
 }
 
-// Initialize when DOM is ready - IMMEDIATE AUTO-START
+// BULLETPROOF SOUNDCLOUD - NO FAIL
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded - IMMEDIATE auto-start of EVERYTHING');
+    console.log('BULLETPROOF SoundCloud initialization - NO FAIL');
     
-    // Force speech synthesis to load
+    // Force speech synthesis ready
     if ('speechSynthesis' in window) {
         speechSynthesis.getVoices();
     }
     
-    // Create website with immediate start
+    // Create website 
     window.cinematicWebsite = new CinematicWebsite();
     
-    // IMMEDIATE force start - no delays
+    // BULLETPROOF SoundCloud - try every second until it works
+    const bulletproofSoundCloud = () => {
+        if (typeof SC !== 'undefined' && SC.Widget) {
+            const iframe = document.getElementById('soundcloud-player');
+            if (iframe) {
+                try {
+                    console.log('BULLETPROOF: Creating SoundCloud Widget');
+                    window.cinematicWebsite.scWidget = SC.Widget(iframe);
+                    
+                    window.cinematicWebsite.scWidget.bind(SC.Widget.Events.READY, () => {
+                        console.log('BULLETPROOF: SoundCloud READY - PLAYING NOW');
+                        setTimeout(() => {
+                            window.cinematicWebsite.scWidget.setVolume(17);
+                            window.cinematicWebsite.scWidget.play();
+                            window.cinematicWebsite.isAudioPlaying = true;
+                            console.log('BULLETPROOF: SoundCloud playing at 17% volume');
+                        }, 100);
+                    });
+                    
+                    window.cinematicWebsite.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                        window.cinematicWebsite.scWidget.setVolume(17);
+                    });
+                    
+                    console.log('BULLETPROOF: SoundCloud Widget created successfully');
+                    return true;
+                } catch (e) {
+                    console.log('BULLETPROOF: SoundCloud error, retrying...', e);
+                }
+            }
+        } else {
+            console.log('BULLETPROOF: SoundCloud API not ready, retrying...');
+        }
+        
+        // Keep trying every second until it works
+        setTimeout(bulletproofSoundCloud, 1000);
+    };
+    
+    // Start bulletproof initialization immediately
+    bulletproofSoundCloud();
+    
+    // Start narrator
     setTimeout(() => {
         if (window.cinematicWebsite) {
-            console.log('FORCING EVERYTHING TO START NOW');
-            
-            // Force SoundCloud ONLY
-            if (window.cinematicWebsite.scWidget) {
-                console.log('Forcing SoundCloud to play NOW');
-                window.cinematicWebsite.scWidget.setVolume(17);
-                window.cinematicWebsite.scWidget.play();
-            }            // Force narrator to start
-            if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
-                console.log('Force starting narrator NOW');
-                window.cinematicWebsite.startIntroductoryNarration();
-            }
+            window.cinematicWebsite.startIntroductoryNarration();
         }
-    }, 100); // Minimal delay
+    }, 1000);
 });
 
 // Global functions for "Begin Your Journey" button compatibility
