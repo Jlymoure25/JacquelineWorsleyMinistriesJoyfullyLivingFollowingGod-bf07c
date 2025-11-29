@@ -37,13 +37,15 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Start with a cinematic entrance (original method)
-        this.playIntroductionSequence();
-        
-        // Initialize SoundCloud player
+        // Initialize SoundCloud player first
         this.initializeSoundCloudPlayer();
         
-        console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
+        // Start with a cinematic entrance - IMMEDIATE auto-start
+        setTimeout(() => {
+            this.playIntroductionSequence();
+        }, 500);
+        
+        console.log('Jacqueline Worsley Ministries website initialized with IMMEDIATE auto-start');
     }
     
     setupAudio() {
@@ -65,12 +67,22 @@ class CinematicWebsite {
             this.scWidget = SC.Widget(this.soundcloudPlayer);
             
             this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
+                console.log('SoundCloud Widget API ready - IMMEDIATE auto-start');
+                
+                // Force immediate play
+                setTimeout(() => {
+                    this.scWidget.setVolume(17);
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                    this.isAudioPlaying = true;
+                    console.log('SoundCloud FORCE STARTED immediately');
+                }, 100);
+                
+                // Backup attempt
+                setTimeout(() => {
+                    this.scWidget.play();
+                    this.scWidget.setVolume(17);
+                }, 1000);
             });
             
             // Enable looping when track finishes
@@ -710,10 +722,35 @@ class CinematicWebsite {
     }
 }
 
-// Initialize when DOM is ready
+// Initialize when DOM is ready - IMMEDIATE AUTO-START
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded - initializing Jacqueline Worsley Ministries website');
+    console.log('DOM loaded - IMMEDIATE auto-start of everything');
+    
+    // Force speech synthesis to load
+    if ('speechSynthesis' in window) {
+        speechSynthesis.getVoices();
+    }
+    
+    // Create website with immediate start
     window.cinematicWebsite = new CinematicWebsite();
+    
+    // Force everything to start after a brief delay
+    setTimeout(() => {
+        if (window.cinematicWebsite) {
+            console.log('FORCING immediate start of all functionality');
+            
+            // Force SoundCloud
+            if (window.cinematicWebsite.scWidget) {
+                window.cinematicWebsite.scWidget.play();
+                window.cinematicWebsite.scWidget.setVolume(17);
+            }
+            
+            // Force narrator if not started
+            if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
+                window.cinematicWebsite.startIntroductoryNarration();
+            }
+        }
+    }, 2000);
 });
 
 // Global functions for "Begin Your Journey" button compatibility
