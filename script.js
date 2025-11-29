@@ -17,7 +17,6 @@ class CinematicWebsite {
         this.fadeInterval = null;
         this.narratorVoice = null; // Store consistent narrator voice
         this.scWidget = null;
-        this.isFading = false; // Track intentional fade state
         this.init();
     }
 
@@ -67,91 +66,31 @@ class CinematicWebsite {
             
             this.scWidget.bind(SC.Widget.Events.READY, () => {
                 console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                
-                // Force play immediately
-                setTimeout(() => {
-                    this.scWidget.setVolume(17);
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                    this.isAudioPlaying = true;
-                    console.log('SoundCloud force-started with looping enabled');
-                }, 500);
-                
-                // Backup attempt after 2 seconds
-                setTimeout(() => {
-                    if (!this.isAudioPlaying) {
-                        console.log('Backup SoundCloud start attempt');
-                        this.scWidget.play();
-                        this.scWidget.setVolume(17);
-                    }
-                }, 2000);
+                this.scWidget.setVolume(17);
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                console.log('SoundCloud auto-started with looping enabled');
             });
             
-            // Enable seamless looping when track finishes - no silence gaps
+            // Enable looping when track finishes
             this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - immediate seamless restart');
-                // Immediate restart to prevent any silence
-                setTimeout(() => {
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                    this.scWidget.setVolume(17); // Maintain volume
-                    console.log('Loop restart completed');
-                }, 100); // Small delay to ensure clean restart
-            });
-            
-            // Also handle any pause events to ensure continuous playback
-            this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-                // Only restart if we're not intentionally fading out
-                if (!this.isFading && !this.fadeInterval) {
-                    console.log('Unexpected pause detected - restarting to maintain seamless loop');
-                    this.scWidget.play();
-                }
+                console.log('Track finished - restarting for loop');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
             });
             
             this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                 this.scWidget.setVolume(17);
-                this.isAudioPlaying = true;
-                console.log('SoundCloud is now playing');
             });
-            
-            this.scWidget.bind(SC.Widget.Events.ERROR, (error) => {
-                console.log('SoundCloud error:', error);
-                // Try to restart on error
-                setTimeout(() => {
-                    this.scWidget.play();
-                }, 1000);
-            });
-        } else {
-            console.log('SoundCloud Widget API not available');
-        }
-    } else {
-        console.log('SoundCloud player element not found');
-    }
-}
-
-// Add method to manually start audio
-startSoundCloudAudio() {
-    if (this.scWidget) {
-        console.log('Manually starting SoundCloud audio');
-        this.scWidget.play();
-        this.scWidget.setVolume(17);
-        this.isAudioPlaying = true;
-    } else {
-        console.log('SoundCloud widget not ready for manual start');
-    }
         }
     }
 
     playIntroductionSequence() {
-        console.log('Starting introduction sequence with all functionality');
+        console.log('Starting introduction sequence');
         
         // Start background music immediately
         this.startBackgroundMusic();
-        
-        // Force speech synthesis to load
-        if ('speechSynthesis' in window) {
-            speechSynthesis.getVoices();
-        }
         
         // Start introductory narrator voice after 2 seconds
         setTimeout(() => {
@@ -673,11 +612,10 @@ startSoundCloudAudio() {
             blackOverlay.style.opacity = '1';
         }, 100);
         
-        // Show button exactly 2 seconds after fade starts
+        // Show button 2 seconds after fade completes (3s fade + 2s wait = 5s total)
         setTimeout(() => {
             replayButton.style.opacity = '1';
-            console.log('Begin Your Journey Again button shown - exactly 2 seconds');
-        }, 2000);
+        }, 5000);
     }
     
     restartJourney() {
@@ -705,20 +643,12 @@ startSoundCloudAudio() {
         // Update progress
         this.updateProgressBar();
         
-        // Restart SoundCloud with seamless looping enabled
+        // Restart SoundCloud with looping
         if (this.scWidget) {
             this.scWidget.setVolume(17);
             this.scWidget.seekTo(0);
             this.scWidget.play();
-            console.log('SoundCloud restarted with seamless looping enabled');
-            
-            // Re-enable the finish event handler for looping
-            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished during restart - immediate loop');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.scWidget.setVolume(17);
-            });
+            console.log('SoundCloud restarted with looping enabled');
         }
         
         // Restart the introduction sequence
@@ -738,16 +668,12 @@ startSoundCloudAudio() {
         const fadeStep = 1;
         const fadeInterval = 176; // milliseconds (17 steps * 176ms = ~3 seconds)
         
-        // Mark that we're intentionally fading (prevents loop restart during fade)
-        this.isFading = true;
-        
         this.fadeInterval = setInterval(() => {
             currentVolume -= fadeStep;
             if (currentVolume <= 0) {
                 this.scWidget.setVolume(0);
                 this.scWidget.pause();
                 clearInterval(this.fadeInterval);
-                this.isFading = false; // Clear fading flag
                 console.log('SoundCloud audio faded out and paused');
                 if (onComplete) onComplete();
             } else {
@@ -855,49 +781,3 @@ window.addEventListener('load', () => {
         speechSynthesis.getVoices();
     }
 });
-
-// Force SoundCloud to start on any user interaction  
-document.addEventListener('click', function forceAudioStart() {
-    if (window.cinematicWebsite) {
-        console.log('User interaction detected - ensuring all functions work');
-        
-        // Start SoundCloud if available
-        if (window.cinematicWebsite.scWidget) {
-            window.cinematicWebsite.scWidget.play();
-            window.cinematicWebsite.scWidget.setVolume(17);
-            window.cinematicWebsite.isAudioPlaying = true;
-        }
-        
-        // Ensure narrator voice is ready
-        if ('speechSynthesis' in window) {
-            speechSynthesis.getVoices();
-            if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
-                setTimeout(() => {
-                    window.cinematicWebsite.startIntroductoryNarration();
-                }, 100);
-            }
-        }
-    }
-}, { once: true });
-
-// Also try on any key press
-document.addEventListener('keydown', function forceAllFunctionsKey() {
-    if (window.cinematicWebsite) {
-        console.log('Key press detected - ensuring all functions work');
-        
-        // Start SoundCloud if available
-        if (window.cinematicWebsite.scWidget) {
-            window.cinematicWebsite.scWidget.play();
-            window.cinematicWebsite.scWidget.setVolume(17);
-            window.cinematicWebsite.isAudioPlaying = true;
-        }
-        
-        // Ensure narrator voice works
-        if ('speechSynthesis' in window) {
-            speechSynthesis.getVoices();
-        }
-    }
-}, { once: true });
-
-// Deployment trigger Sat Nov 29 03:46:36 UTC 2025
-// Full functionality restored Sat Nov 29 04:36:19 UTC 2025
