@@ -20,17 +20,18 @@ class CinematicWebsite {
         this.narrationStarted = false;
         this.init();
         
-        // Backup: start on any user interaction
+        // Ensure audio starts on any click
         document.addEventListener('click', () => {
-            if (!this.audioStarted) {
-                this.forceStartAudio();
-                this.audioStarted = true;
+            const audio = document.getElementById('backgroundAudio');
+            if (audio && !this.isAudioPlaying) {
+                audio.play();
+                this.isAudioPlaying = true;
             }
-            if (!this.narrationStarted) {
-                this.forceStartNarration();
-                this.narrationStarted = true;
+            
+            if (!this.isNarrating) {
+                this.speakWelcomeMessage();
             }
-        }, { once: false });
+        });
     }
 
     init() {
@@ -47,10 +48,95 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // FORCE EVERYTHING TO START IMMEDIATELY
-        this.forceStartEverything();
+        // Start audio and narration immediately
+        this.startAudioAndNarration();
         
-        console.log('Jacqueline Worsley Ministries website initialized with FORCED audio and narration');
+        console.log('Website initialized');
+        
+        // Make function globally available
+        window.startAudioAndNarration = () => {
+            this.startAudioAndNarration();
+        };
+    }
+    
+    startAudioAndNarration() {
+        // Start audio immediately
+        const audio = document.getElementById('backgroundAudio');
+        if (audio) {
+            audio.play();
+            this.isAudioPlaying = true;
+            console.log('Audio started');
+        }
+        
+        // Start narration immediately
+        setTimeout(() => {
+            this.speakWelcomeMessage();
+        }, 1000);
+    }
+    
+    speakWelcomeMessage() {
+        const message = "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.";
+        
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            utterance.volume = 1.0;
+            
+            const voices = speechSynthesis.getVoices();
+            const voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+            if (voice) {
+                utterance.voice = voice;
+            }
+            
+            utterance.onend = () => {
+                setTimeout(() => {
+                    this.speakNextMessage();
+                }, 2000);
+            };
+            
+            speechSynthesis.speak(utterance);
+            this.isNarrating = true;
+            console.log('Narration started');
+        }
+    }
+    
+    speakNextMessage() {
+        const messages = [
+            "Let's prepare our hearts for a wonderful journey through God's Word together.",
+            "Here's a beautiful teaching for us today. The Parable of the Talents from Matthew chapter 25. It's truly inspiring.",
+            "Come, let's discover what amazing gifts our loving God has given each one of us."
+        ];
+        
+        let index = 0;
+        
+        const speakNext = () => {
+            if (index < messages.length) {
+                const utterance = new SpeechSynthesisUtterance(messages[index]);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                utterance.volume = 1.0;
+                
+                const voices = speechSynthesis.getVoices();
+                const voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+                if (voice) {
+                    utterance.voice = voice;
+                }
+                
+                utterance.onend = () => {
+                    index++;
+                    if (index < messages.length) {
+                        setTimeout(speakNext, 2000);
+                    } else {
+                        this.isNarrating = false;
+                    }
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+        };
+        
+        speakNext();
     }
     
     forceStartEverything() {

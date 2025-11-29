@@ -120,7 +120,7 @@
             }
         </style>
     </div>
-    <audio id="backgroundAudio" loop autoplay preload="auto" muted="false">
+    <audio id="backgroundAudio" loop preload="auto">
         <source src="https://commondatastorage.googleapis.com/codeskulptor-assets/Epoq-Lepidoptera.ogg" type="audio/ogg">
         <source src="https://commondatastorage.googleapis.com/codeskulptor-demos/pyman_assets/intromusic.ogg" type="audio/ogg">
         <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshRzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFA==" type="audio/wav">
@@ -146,7 +146,7 @@
                         where every parable holds eternal wisdom and every lesson draws us closer to His heart.
                     </p>
                 </div>
-                <button class="continue-btn" onclick="startJourney(); enableAudio();">Begin Your Journey 🎵</button>
+                <button class="continue-btn" onclick="startJourney(); enableAudio(); startAudioAndNarration();">Begin Your Journey 🎵</button>
             </div>
             <div class="golden-particles"></div>
         </section>
