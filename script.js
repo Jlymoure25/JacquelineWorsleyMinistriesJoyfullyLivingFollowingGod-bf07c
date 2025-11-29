@@ -773,6 +773,33 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
+// Force everything to start on first user interaction
+document.addEventListener('click', function forceAllFunctionality() {
+    console.log('User clicked - forcing ALL functionality to start!');
+    
+    if (window.cinematicWebsite) {
+        // Force SoundCloud to play
+        if (window.cinematicWebsite.scWidget) {
+            console.log('Force starting SoundCloud');
+            window.cinematicWebsite.scWidget.setVolume(17);
+            window.cinematicWebsite.scWidget.play();
+            window.cinematicWebsite.isAudioPlaying = true;
+        }
+        
+        // Force speech synthesis to be ready
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+            console.log('Speech synthesis voices loaded');
+            
+            // Force start narrator if not already started
+            if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
+                console.log('Force starting narrator');
+                window.cinematicWebsite.startIntroductoryNarration();
+            }
+        }
+    }
+}, { once: true });
+
 // Auto-start everything when page loads (after user interaction)
 window.addEventListener('load', () => {
     console.log('Page loaded - website ready');
@@ -780,4 +807,13 @@ window.addEventListener('load', () => {
     if ('speechSynthesis' in window) {
         speechSynthesis.getVoices();
     }
+    
+    // Try to start immediately if possible
+    setTimeout(() => {
+        if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
+            console.log('Attempting immediate start');
+            window.cinematicWebsite.scWidget.play();
+            window.cinematicWebsite.scWidget.setVolume(17);
+        }
+    }, 1000);
 });
