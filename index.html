@@ -85,19 +85,19 @@
 <body>
     <!-- Background Audio -->
     <div id="audio-container">
-        <iframe id="soundcloud-player" width="100" height="100" style="position: fixed; bottom: -200px; right: -200px; opacity: 0.01; pointer-events: none; z-index: -1;" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/smoothjazzallstars/we-belong-together-3&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true&seek=0&start_track=0&single_active=false&buying=false&liking=false&download=false&sharing=false&show_artwork=true&show_bpm=false&show_playcount=false&enable_api=true"></iframe>
+        <iframe id="soundcloud-player" width="300" height="166" style="position: fixed; bottom: -300px; right: -400px; z-index: -1000;" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/13158665&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false&start_track=0&buying=false&liking=false&download=false&sharing=false&show_playcount=false&show_artwork=false"></iframe>
         <script src="https://w.soundcloud.com/player/api.js"></script>
         <style>
-            /* SoundCloud player - positioned off-screen but functional for API access */
+            /* SoundCloud player - completely hidden but functional */
             #soundcloud-player {
-                position: fixed;
-                bottom: -200px;
-                right: -200px;
-                opacity: 0.01;
-                pointer-events: none;
-                width: 100px;
-                height: 100px;
-                z-index: -1;
+                position: fixed !important;
+                bottom: -300px !important;
+                right: -400px !important;
+                z-index: -1000 !important;
+                width: 300px !important;
+                height: 166px !important;
+                border: none !important;
+                visibility: hidden !important;
             }
             
             /* Video fade to black transition */
@@ -120,9 +120,10 @@
             }
         </style>
     </div>
-    <audio id="backgroundAudio" loop autoplay>
-        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
-        <!-- Fallback audio -->
+    <audio id="backgroundAudio" loop autoplay preload="auto" muted="false">
+        <source src="https://commondatastorage.googleapis.com/codeskulptor-assets/Epoq-Lepidoptera.ogg" type="audio/ogg">
+        <source src="https://commondatastorage.googleapis.com/codeskulptor-demos/pyman_assets/intromusic.ogg" type="audio/ogg">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshRzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFA==" type="audio/wav">
     </audio>
 
     <!-- Main Container -->

@@ -16,16 +16,27 @@ class CinematicWebsite {
         this.soundcloudPlayer = null;
         this.fadeInterval = null;
         this.narratorVoice = null; // Store consistent narrator voice
+        this.audioStarted = false;
+        this.narrationStarted = false;
         this.init();
+        
+        // Backup: start on any user interaction
+        document.addEventListener('click', () => {
+            if (!this.audioStarted) {
+                this.forceStartAudio();
+                this.audioStarted = true;
+            }
+            if (!this.narrationStarted) {
+                this.forceStartNarration();
+                this.narrationStarted = true;
+            }
+        }, { once: false });
     }
 
     init() {
         // Get all sections
         this.sections = document.querySelectorAll('.section');
         this.totalSections = this.sections.length;
-        
-        // Setup audio
-        this.setupAudio();
         
         // Setup navigation
         this.setupNavigation();
@@ -36,17 +47,39 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Start everything immediately
-        this.initializeSoundCloudPlayer();
-        this.startBackgroundMusic();
-        this.playIntroductionSequence();
+        // FORCE EVERYTHING TO START IMMEDIATELY
+        this.forceStartEverything();
         
-        // Force narration to start immediately
+        console.log('Jacqueline Worsley Ministries website initialized with FORCED audio and narration');
+    }
+    
+    forceStartEverything() {
+        // Force start audio immediately
+        this.forceStartAudio();
+        
+        // Force start narration immediately
+        this.forceStartNarration();
+        
+        // Keep trying every 100ms until both work
+        this.keepTrying = setInterval(() => {
+            if (!this.isAudioPlaying) {
+                this.forceStartAudio();
+            }
+            if (!this.isNarrating) {
+                this.forceStartNarration();
+            }
+            // Stop trying after both are working
+            if (this.isAudioPlaying && this.isNarrating) {
+                clearInterval(this.keepTrying);
+            }
+        }, 100);
+        
+        // Stop trying after 10 seconds max
         setTimeout(() => {
-            this.displayWelcomeMessage();
-        }, 500);
-        
-        console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
+            if (this.keepTrying) {
+                clearInterval(this.keepTrying);
+            }
+        }, 10000);
     }
 
     setupAudio() {
@@ -339,24 +372,57 @@ class CinematicWebsite {
         }, 3100);
     }
     
-    startBackgroundMusic() {
-        console.log('Attempting to start background music automatically');
+    forceStartAudio() {
+        console.log('FORCING audio to start now!');
         
-        // Try SoundCloud first
-        if (this.soundcloudPlayer) {
-            if (this.scWidget) {
-                this.scWidget.play();
-                this.scWidget.setVolume(17);
+        // Method 1: HTML5 Audio (most reliable)
+        const audio = document.getElementById('backgroundAudio');
+        if (audio) {
+            audio.muted = false;
+            audio.volume = 0.3;
+            audio.play().then(() => {
                 this.isAudioPlaying = true;
-                console.log('SoundCloud audio started');
-            } else {
-                console.log('SoundCloud widget not ready, trying fallback audio');
-                this.startFallbackAudio();
-            }
-        } else {
-            console.log('SoundCloud player not found, using fallback audio');
-            this.startFallbackAudio();
+                console.log('✅ HTML5 Audio started successfully!');
+            }).catch(() => {
+                console.log('HTML5 audio failed, trying other methods');
+            });
         }
+        
+        // Method 2: SoundCloud as backup
+        this.tryStartSoundCloud();
+        
+        // Method 3: Web Audio API as last resort
+        this.tryWebAudio();
+    }
+    
+    tryStartSoundCloud() {
+        const player = document.getElementById('soundcloud-player');
+        if (player) {
+            player.src = player.src; // Reload iframe
+            console.log('SoundCloud iframe reloaded');
+        }
+    }
+    
+    tryWebAudio() {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+            
+            console.log('✅ Web Audio API backup started');
+        } catch (e) {
+            console.log('Web Audio API failed:', e);
+        }
+    }
             if (this.ambientAudio) {
                 this.ambientAudio.play();
             }
@@ -639,12 +705,8 @@ class CinematicWebsite {
     }
 
     playIntroductionSequence() {
-        // Start narration immediately
-        console.log('Starting introduction sequence with automatic narration');
-        this.isPaused = false; // Ensure narration is enabled
-        
-        // Start narration without any delay
-        this.displayWelcomeMessage();
+        // This is now handled by forceStartEverything
+        console.log('Introduction sequence handled by forced start');
     }
     
     showMusicIntro() {
@@ -668,18 +730,83 @@ class CinematicWebsite {
         this.startAudioPlayback();
     }
 
-    displayWelcomeMessage() {
-        // Force load voices and start immediately
-        const voices = speechSynthesis.getVoices();
-        if (voices.length === 0) {
-            // Force voices to load
-            speechSynthesis.onvoiceschanged = () => {
-                this.displayWelcomeMessage();
-            };
-            return;
-        }
+    forceStartNarration() {
+        console.log('FORCING narration to start now!');
         
-        console.log('Starting welcome message narration with', voices.length, 'voices available');
+        // Force speech synthesis to be ready
+        speechSynthesis.cancel();
+        
+        const startNarration = () => {
+            const message = "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.";
+            
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            utterance.volume = 1.0;
+            
+            // Get any available voice
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                utterance.voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+            }
+            
+            utterance.onstart = () => {
+                this.isNarrating = true;
+                console.log('✅ Narration started successfully!');
+            };
+            
+            utterance.onend = () => {
+                this.isNarrating = false;
+                // Continue with next message
+                this.continueNarration();
+            };
+            
+            speechSynthesis.speak(utterance);
+        };
+        
+        // Try immediately
+        startNarration();
+        
+        // Also try when voices change
+        speechSynthesis.onvoiceschanged = startNarration;
+    }
+    
+    continueNarration() {
+        const messages = [
+            "Let's prepare our hearts for a wonderful journey through God's Word together.",
+            "Here's a beautiful teaching for us today. The Parable of the Talents from Matthew chapter 25. It's truly inspiring.",
+            "Come, let's discover what amazing gifts our loving God has given each one of us."
+        ];
+        
+        let messageIndex = 0;
+        
+        const speakNext = () => {
+            if (messageIndex < messages.length) {
+                const utterance = new SpeechSynthesisUtterance(messages[messageIndex]);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                utterance.volume = 1.0;
+                
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    utterance.voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+                }
+                
+                utterance.onend = () => {
+                    messageIndex++;
+                    setTimeout(speakNext, 1000);
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+        };
+        
+        setTimeout(speakNext, 1500);
+    }
+    
+    displayWelcomeMessage() {
+        // This is now handled by forceStartNarration
+        console.log('Welcome message display handled by forced narration');
         
         // Natural, warm voice introduction with actual narration
         const messages = [
