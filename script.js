@@ -62,55 +62,30 @@ class CinematicWebsite {
             };
         }
         
-        // Create Web Audio API background sound as immediate backup
-        this.createWebAudioBackground();
-        
-        console.log('Setting up SoundCloud Widget with immediate force-play...');
-        
-        // Wait for SoundCloud API to be available
-        const initSoundCloudWidget = () => {
-            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                console.log('Initializing SoundCloud Widget...');
-                this.scWidget = SC.Widget(this.soundcloudPlayer);
-                
-                this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget is READY - starting playback');
-                    
-                    // Force play with volume
-                    this.scWidget.setVolume(17);
-                    this.scWidget.play().then(() => {
-                        console.log('SoundCloud playback started successfully');
-                        this.isAudioPlaying = true;
-                    }).catch(error => {
-                        console.log('SoundCloud play failed:', error);
-                        this.createWebAudioBackground();
-                    });
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('Track finished - looping');
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                    this.scWidget.setVolume(17);
-                    console.log('SoundCloud playing at 17% volume');
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-                    console.log('SoundCloud paused - restarting');
-                    setTimeout(() => this.scWidget.play(), 100);
-                });
-                
-            } else {
-                console.log('SoundCloud API not ready, retrying in 500ms...');
-                setTimeout(initSoundCloudWidget, 500);
-            }
-        };
-        
-        // Start initialization
-        setTimeout(initSoundCloudWidget, 100);
+        // Initialize SoundCloud Widget API ONLY
+        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+            this.scWidget = SC.Widget(this.soundcloudPlayer);
+            
+            this.scWidget.bind(SC.Widget.Events.READY, () => {
+                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
+                this.scWidget.setVolume(17);
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                console.log('SoundCloud auto-started with looping enabled');
+            });
+            
+            // Enable looping when track finishes
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('Track finished - restarting for loop');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                this.scWidget.setVolume(17);
+            });
+        }
     }
 
     playIntroductionSequence() {
@@ -271,30 +246,6 @@ class CinematicWebsite {
             }
         }
         return this.narratorVoice;
-    }
-
-    createWebAudioBackground() {
-        try {
-            // Create Web Audio API context for immediate background sound
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.gainNode = this.audioContext.createGain();
-            this.gainNode.gain.value = 0.17; // 17% volume
-            this.gainNode.connect(this.audioContext.destination);
-            
-            // Create a simple ambient tone
-            this.oscillator = this.audioContext.createOscillator();
-            this.oscillator.type = 'sine';
-            this.oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime); // A3 note
-            this.oscillator.connect(this.gainNode);
-            
-            // Start immediately
-            this.oscillator.start();
-            console.log('Web Audio API background tone started at 17% volume');
-            this.isAudioPlaying = true;
-            
-        } catch (e) {
-            console.log('Web Audio API not available:', e);
-        }
     }
 
     startBackgroundMusic() {
@@ -778,17 +729,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.cinematicWebsite) {
             console.log('FORCING EVERYTHING TO START NOW');
             
-            // Force Web Audio to start
-            window.cinematicWebsite.createWebAudioBackground();
-            
-            // Force all audio to start
+            // Force SoundCloud ONLY
             if (window.cinematicWebsite.scWidget) {
                 console.log('Forcing SoundCloud to play NOW');
                 window.cinematicWebsite.scWidget.setVolume(17);
                 window.cinematicWebsite.scWidget.play();
-            } else {
-                console.log('SoundCloud not ready, starting Web Audio backup');
-                window.cinematicWebsite.createWebAudioBackground();
             }            // Force narrator to start
             if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
                 console.log('Force starting narrator NOW');
