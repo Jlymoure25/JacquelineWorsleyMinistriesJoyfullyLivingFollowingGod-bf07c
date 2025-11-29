@@ -143,10 +143,15 @@ startSoundCloudAudio() {
     }
 
     playIntroductionSequence() {
-        console.log('Starting introduction sequence');
+        console.log('Starting introduction sequence with all functionality');
         
         // Start background music immediately
         this.startBackgroundMusic();
+        
+        // Force speech synthesis to load
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+        }
         
         // Start introductory narrator voice after 2 seconds
         setTimeout(() => {
@@ -853,21 +858,44 @@ window.addEventListener('load', () => {
 
 // Force SoundCloud to start on any user interaction  
 document.addEventListener('click', function forceAudioStart() {
-    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
-        console.log('User interaction detected - force starting SoundCloud');
-        window.cinematicWebsite.scWidget.play();
-        window.cinematicWebsite.scWidget.setVolume(17);
-        window.cinematicWebsite.isAudioPlaying = true;
+    if (window.cinematicWebsite) {
+        console.log('User interaction detected - ensuring all functions work');
+        
+        // Start SoundCloud if available
+        if (window.cinematicWebsite.scWidget) {
+            window.cinematicWebsite.scWidget.play();
+            window.cinematicWebsite.scWidget.setVolume(17);
+            window.cinematicWebsite.isAudioPlaying = true;
+        }
+        
+        // Ensure narrator voice is ready
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+            if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
+                setTimeout(() => {
+                    window.cinematicWebsite.startIntroductoryNarration();
+                }, 100);
+            }
+        }
     }
 }, { once: true });
 
 // Also try on any key press
-document.addEventListener('keydown', function forceAudioStartKey() {
-    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
-        console.log('Key press detected - force starting SoundCloud');
-        window.cinematicWebsite.scWidget.play();
-        window.cinematicWebsite.scWidget.setVolume(17);
-        window.cinematicWebsite.isAudioPlaying = true;
+document.addEventListener('keydown', function forceAllFunctionsKey() {
+    if (window.cinematicWebsite) {
+        console.log('Key press detected - ensuring all functions work');
+        
+        // Start SoundCloud if available
+        if (window.cinematicWebsite.scWidget) {
+            window.cinematicWebsite.scWidget.play();
+            window.cinematicWebsite.scWidget.setVolume(17);
+            window.cinematicWebsite.isAudioPlaying = true;
+        }
+        
+        // Ensure narrator voice works
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+        }
     }
 }, { once: true });
 
