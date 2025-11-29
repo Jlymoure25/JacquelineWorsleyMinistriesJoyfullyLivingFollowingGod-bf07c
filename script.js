@@ -67,20 +67,36 @@ class CinematicWebsite {
             
             this.scWidget.bind(SC.Widget.Events.READY, () => {
                 console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
+                
+                // Force play immediately
+                setTimeout(() => {
+                    this.scWidget.setVolume(17);
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                    this.isAudioPlaying = true;
+                    console.log('SoundCloud force-started with looping enabled');
+                }, 500);
+                
+                // Backup attempt after 2 seconds
+                setTimeout(() => {
+                    if (!this.isAudioPlaying) {
+                        console.log('Backup SoundCloud start attempt');
+                        this.scWidget.play();
+                        this.scWidget.setVolume(17);
+                    }
+                }, 2000);
             });
             
             // Enable seamless looping when track finishes - no silence gaps
             this.scWidget.bind(SC.Widget.Events.FINISH, () => {
                 console.log('Track finished - immediate seamless restart');
                 // Immediate restart to prevent any silence
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.scWidget.setVolume(17); // Maintain volume
+                setTimeout(() => {
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                    this.scWidget.setVolume(17); // Maintain volume
+                    console.log('Loop restart completed');
+                }, 100); // Small delay to ensure clean restart
             });
             
             // Also handle any pause events to ensure continuous playback
@@ -94,7 +110,35 @@ class CinematicWebsite {
             
             this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                 this.scWidget.setVolume(17);
+                this.isAudioPlaying = true;
+                console.log('SoundCloud is now playing');
             });
+            
+            this.scWidget.bind(SC.Widget.Events.ERROR, (error) => {
+                console.log('SoundCloud error:', error);
+                // Try to restart on error
+                setTimeout(() => {
+                    this.scWidget.play();
+                }, 1000);
+            });
+        } else {
+            console.log('SoundCloud Widget API not available');
+        }
+    } else {
+        console.log('SoundCloud player element not found');
+    }
+}
+
+// Add method to manually start audio
+startSoundCloudAudio() {
+    if (this.scWidget) {
+        console.log('Manually starting SoundCloud audio');
+        this.scWidget.play();
+        this.scWidget.setVolume(17);
+        this.isAudioPlaying = true;
+    } else {
+        console.log('SoundCloud widget not ready for manual start');
+    }
         }
     }
 
@@ -805,4 +849,26 @@ window.addEventListener('load', () => {
     if ('speechSynthesis' in window) {
         speechSynthesis.getVoices();
     }
-});// Deployment trigger Sat Nov 29 03:46:36 UTC 2025
+});
+
+// Force SoundCloud to start on any user interaction  
+document.addEventListener('click', function forceAudioStart() {
+    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
+        console.log('User interaction detected - force starting SoundCloud');
+        window.cinematicWebsite.scWidget.play();
+        window.cinematicWebsite.scWidget.setVolume(17);
+        window.cinematicWebsite.isAudioPlaying = true;
+    }
+}, { once: true });
+
+// Also try on any key press
+document.addEventListener('keydown', function forceAudioStartKey() {
+    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
+        console.log('Key press detected - force starting SoundCloud');
+        window.cinematicWebsite.scWidget.play();
+        window.cinematicWebsite.scWidget.setVolume(17);
+        window.cinematicWebsite.isAudioPlaying = true;
+    }
+}, { once: true });
+
+// Deployment trigger Sat Nov 29 03:46:36 UTC 2025
