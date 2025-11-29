@@ -369,13 +369,23 @@ class CinematicWebsite {
         }
 
         const sceneNarrations = {
-            'parable-intro': "A wealthy master entrusted his money to his servants before going on a journey. This is the story of what they chose to do with what was given to them.",
-            'scene1': "To the first servant, he gave five talents - a fortune worth many years of wages. This servant received the most because the master trusted his abilities.",
-            'scene2': "To the second servant, he gave two talents - still a substantial amount. Each servant received according to their ability and the master's trust in them.",
-            'scene3': "To the third servant, he gave one talent. Even one talent was worth twenty years of wages for a laborer - this was no small gift.",
-            'scene4': "The first two servants immediately went to work, trading and investing wisely. They doubled what they had been given through faithful service.",
-            'scene5': "But the third servant, filled with fear, dug a hole and buried his talent in the ground. He chose safety over faith, hiding instead of multiplying what was entrusted to him.",
-            'message': "When the master returned, he celebrated those who had been faithful with what they received. But to the one who buried his talent, he said: 'You wicked and lazy servant!' The risk of not using God's gifts is far greater than any risk in using them."
+            'parable-intro': "The Parable of the Talents. Matthew chapter 25 verses 14 through 30. A story of faithfulness, multiplication, and the sacred trust God places in each of us. A wealthy master entrusted his money to his servants before going on a journey. This is the story of what they chose to do with what was given to them.",
+            
+            'scene1': "Verses 14 through 15. For it will be like a man going on a journey, who called his servants and entrusted to them his property. To one he gave five talents, to another two, to another one, to each according to his ability. Then he went away. To the first servant, he gave five talents - a fortune worth many years of wages. This servant received the most because the master trusted his abilities.",
+            
+            'scene2': "Verses 16 through 17. He who had received the five talents went at once and traded with them, and he made five talents more. So also he who had the two talents made two talents more. The first two servants immediately went to work, trading and investing wisely. They doubled what they had been given through faithful service.",
+            
+            'scene3': "Verse 18. But he who had received the one talent went and dug in the ground and hid his master's money. The third servant, filled with fear, dug a hole and buried his talent in the ground. He chose safety over faith, hiding instead of multiplying what was entrusted to him. I was afraid, he said.",
+            
+            'scene4': "Verses 19 through 23. Now after a long time the master of those servants came and settled accounts with them. Well done, good and faithful servant. You have been faithful over a little; I will set you over much. Enter into the joy of your master. When the master returned, he celebrated those who had been faithful with what they received.",
+            
+            'scene5': "Verses 24 through 30. He also who had received the one talent came forward, saying, Master, I knew you to be a hard man, so I was afraid, and I went and hid your talent. But his master answered him, You wicked and slothful servant! But to the one who buried his talent, he said: 'You wicked and lazy servant!' The risk of not using God's gifts is far greater than any risk in using them.",
+            
+            'message': "The Sacred Trust. Seek to please, obey, and trust God with all He has invested in you, or lose everything - including all God invested in you and yourself. Did You Know? A talent was a monetary unit worth about twenty years' wages for a laborer. JESUS, imagine that! The loss today would be worth more than a whole life of wages - then you lose yourself too. The risk is too, too high. The risk of total loss ain't worth it.",
+            
+            'closing': "Until Next Time. Join us next time as we take another trip in the WORD OF GOD. Joyfully Living Following God.",
+            
+            'thanksgiving': "HAPPY THANKSGIVING EVERYONE EVERYBODY from Jacqueline Worsley Ministries Joyfully Living Following God. Thanksgiving is a lifestyle not just a one day celebration. Hashtag thank God everyday all the time from whom all blessings flow. Take Care and May God Bless You With His Choice Blessings. GOD FIRST."
         };
 
         // Only narrate specific parable sections
@@ -387,15 +397,21 @@ class CinematicWebsite {
             setTimeout(() => {
                 const onComplete = () => {
                     console.log(`Completed narration for ${currentSectionId}`);
-                    // Auto-advance after narration with a brief pause
-                    if (this.currentSection < this.totalSections - 1) {
-                        setTimeout(() => {
-                            this.autoProgressTimer = setTimeout(() => {
-                                if (this.currentSection < this.totalSections - 1) {
-                                    this.nextSection();
-                                }
-                            }, 2500); // 2.5 seconds after narration ends for natural flow
-                        }, 1000);
+                    
+                    // Special handling for thanksgiving section - final section
+                    if (currentSectionId === 'thanksgiving') {
+                        this.handleFinalEnding();
+                    } else {
+                        // Auto-advance after narration with a brief pause
+                        if (this.currentSection < this.totalSections - 1) {
+                            setTimeout(() => {
+                                this.autoProgressTimer = setTimeout(() => {
+                                    if (this.currentSection < this.totalSections - 1) {
+                                        this.nextSection();
+                                    }
+                                }, 2500); // 2.5 seconds after narration ends for natural flow
+                            }, 1000);
+                        }
                     }
                 };
                 
@@ -415,10 +431,13 @@ class CinematicWebsite {
                 this.animateParableScene(currentSectionId);
                 break;
             case 'message':
-                this.displayMessageTakeaway();
+                // Message narration handled above with complete text
+                break;
+            case 'closing':
+                // Closing narration handled above with complete text
                 break;
             case 'thanksgiving':
-                this.handleThanksgivingSection();
+                // Thanksgiving narration handled above with complete text
                 break;
         }
     }
@@ -454,54 +473,141 @@ class CinematicWebsite {
         });
     }
 
-    displayMessageTakeaway() {
-        // Add actual narration for the message - only once
-        const sectionKey = `${this.currentSection}-message`;
-        if (!this.sectionNarrated.has(sectionKey)) {
-            this.sectionNarrated.add(sectionKey);
-            
-            const keyMessage = "Seek to please, obey, and trust God with all He has invested in you, or lose everything including all God invested in you and yourself. A talent was worth twenty years wages for a laborer. Jesus, imagine that! The risk is too, too high. The risk of total loss ain't worth it.";
-            
-            // Speak the message with completion callback for auto-advance
-            setTimeout(() => {
-                const onComplete = () => {
-                    // Auto-advance after message narration
-                    this.autoProgressTimer = setTimeout(() => {
-                        if (this.currentSection < this.totalSections - 1) {
-                            this.nextSection();
-                        }
-                    }, 2500);
-                    console.log('Message takeaway narration complete, auto-advancing');
-                };
-                this.speakText(keyMessage, onComplete);
-            }, 1000);
+    // displayMessageTakeaway removed - now handled in main narration flow
+
+    handleFinalEnding() {
+        console.log('Handling final ending sequence');
+        
+        // Fade out audio after 2 seconds
+        setTimeout(() => {
+            console.log('Starting audio fade out');
+            if (this.scWidget) {
+                this.fadeOutSoundCloudAudio(() => {
+                    // After audio fades, wait 2 seconds then fade to black
+                    setTimeout(() => {
+                        this.fadeToBlackAndShowReplay();
+                    }, 2000);
+                });
+            } else {
+                // If no audio widget, just fade to black after 2 seconds
+                setTimeout(() => {
+                    this.fadeToBlackAndShowReplay();
+                }, 2000);
+            }
+        }, 2000);
+    }
+    
+    fadeToBlackAndShowReplay() {
+        console.log('Fading to black and showing replay option');
+        
+        // Create black overlay
+        const blackOverlay = document.createElement('div');
+        blackOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        `;
+        
+        // Create replay button
+        const replayButton = document.createElement('button');
+        replayButton.textContent = 'Begin Your Journey Again';
+        replayButton.style.cssText = `
+            background: linear-gradient(45deg, rgba(220, 20, 60, 0.9), rgba(139, 0, 0, 0.9));
+            color: #FFD700;
+            padding: 20px 40px;
+            border: 3px solid #FFD700;
+            border-radius: 25px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease, opacity 2s ease 4s;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+        `;
+        
+        replayButton.addEventListener('click', () => {
+            this.restartJourney();
+        });
+        
+        replayButton.addEventListener('mouseover', () => {
+            replayButton.style.transform = 'scale(1.1)';
+            replayButton.style.boxShadow = '0 20px 60px rgba(0,0,0,0.8)';
+        });
+        
+        replayButton.addEventListener('mouseout', () => {
+            replayButton.style.transform = 'scale(1)';
+            replayButton.style.boxShadow = '0 15px 40px rgba(0,0,0,0.6)';
+        });
+        
+        blackOverlay.appendChild(replayButton);
+        document.body.appendChild(blackOverlay);
+        
+        // Fade to black
+        setTimeout(() => {
+            blackOverlay.style.opacity = '1';
+        }, 100);
+        
+        // Show button after fade completes
+        setTimeout(() => {
+            replayButton.style.opacity = '1';
+        }, 4000);
+    }
+    
+    restartJourney() {
+        console.log('Restarting the journey');
+        
+        // Remove any overlays
+        const overlays = document.querySelectorAll('[style*="position: fixed"][style*="z-index: 9999"]');
+        overlays.forEach(overlay => overlay.remove());
+        
+        // Reset all state
+        this.currentSection = 0;
+        this.sectionNarrated.clear();
+        this.isNarrating = false;
+        this.isPaused = false;
+        
+        // Reset sections
+        this.sections.forEach(section => {
+            section.classList.remove('active', 'prev');
+        });
+        
+        if (this.sections[0]) {
+            this.sections[0].classList.add('active');
         }
+        
+        // Update progress
+        this.updateProgressBar();
+        
+        // Restart SoundCloud
+        if (this.scWidget) {
+            this.scWidget.setVolume(17);
+            this.scWidget.seekTo(0);
+            this.scWidget.play();
+        }
+        
+        // Restart the introduction sequence
+        setTimeout(() => {
+            this.playIntroductionSequence();
+        }, 1000);
     }
 
-    handleThanksgivingSection() {
-        console.log('Handling thanksgiving section');
-        
-        const thanksgivingText = "Thank you, dear friends, for joining us today in studying God's Word. May you be blessed as you use the gifts God has given you for His glory. Remember, God calls us to be faithful stewards of everything He entrusts to us. Go and be fruitful!";
-        
-        const sectionKey = `${this.currentSection}-thanksgiving`;
-        if (!this.sectionNarrated.has(sectionKey)) {
-            this.sectionNarrated.add(sectionKey);
-            
-            setTimeout(() => {
-                const onGodFirstComplete = () => {
-                    console.log('Thanksgiving narration completed');
-                    // Final fade out of audio
-                    if (this.scWidget) {
-                        this.fadeOutSoundCloudAudio();
-                    }
-                };
-                this.speakText(thanksgivingText, onGodFirstComplete);
-            }, 1000);
+    fadeOutSoundCloudAudio(onComplete = null) {
+        if (!this.scWidget) {
+            if (onComplete) onComplete();
+            return;
         }
-    }
-
-    fadeOutSoundCloudAudio() {
-        if (!this.scWidget) return;
         
         console.log('Starting SoundCloud audio fade-out');
         let currentVolume = 17;
@@ -515,6 +621,7 @@ class CinematicWebsite {
                 this.scWidget.pause();
                 clearInterval(this.fadeInterval);
                 console.log('SoundCloud audio faded out and paused');
+                if (onComplete) onComplete();
             } else {
                 this.scWidget.setVolume(currentVolume);
             }
