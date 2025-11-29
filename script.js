@@ -46,36 +46,7 @@ class CinematicWebsite {
     }
     
     setupAudio() {
-        this.backgroundAudio = document.getElementById('background-audio');
         this.soundcloudPlayer = document.getElementById('soundcloud-player');
-        
-        // Initialize HTML5 audio first (most reliable)
-        if (this.backgroundAudio) {
-            this.backgroundAudio.muted = false; // Unmute after user interaction
-            this.backgroundAudio.volume = 0.17; // 17% volume
-            this.backgroundAudio.loop = true;
-            
-            // Try to play immediately
-            const playAudio = () => {
-                this.backgroundAudio.play().then(() => {
-                    console.log('HTML5 background audio started at 17% volume');
-                    this.isAudioPlaying = true;
-                }).catch(error => {
-                    console.log('HTML5 audio blocked:', error);
-                    // Try SoundCloud as fallback
-                    this.initializeSoundCloudWidget();
-                });
-            };
-            
-            playAudio();
-            
-            // Also try on any user interaction
-            document.addEventListener('click', () => {
-                if (!this.isAudioPlaying) {
-                    playAudio();
-                }
-            }, { once: true });
-        }
         
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
@@ -87,6 +58,9 @@ class CinematicWebsite {
                 this.getNarratorVoice();
             };
         }
+        
+        // Initialize SoundCloud Widget like before
+        this.initializeSoundCloudWidget();
     }
 
     playIntroductionSequence() {
@@ -296,21 +270,11 @@ class CinematicWebsite {
     }
 
     startBackgroundMusic() {
-        console.log('Starting background music');
-        
-        // Try HTML5 audio first
-        if (this.backgroundAudio && !this.isAudioPlaying) {
-            this.backgroundAudio.volume = 0.17;
-            this.backgroundAudio.play().then(() => {
-                console.log('HTML5 audio playing at 17% volume');
-                this.isAudioPlaying = true;
-            }).catch(() => {
-                // Fallback to SoundCloud
-                if (this.scWidget) {
-                    this.scWidget.setVolume(17);
-                    this.scWidget.play();
-                }
-            });
+        console.log('Starting SoundCloud We Belong Together');
+        if (this.scWidget) {
+            this.scWidget.setVolume(17);
+            this.scWidget.play();
+            console.log('SoundCloud playing We Belong Together at 17% volume');
         }
     }
 
