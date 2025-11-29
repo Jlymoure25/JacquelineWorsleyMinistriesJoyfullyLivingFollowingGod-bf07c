@@ -67,52 +67,50 @@ class CinematicWebsite {
         
         console.log('Setting up SoundCloud Widget with immediate force-play...');
         
-        // Wait for SoundCloud API to be fully loaded
-        const initSoundCloud = () => {
-            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                this.scWidget = SC.Widget(this.soundcloudPlayer);
-                console.log('SoundCloud Widget created');
+        // Initialize SoundCloud Widget API properly
+        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+            this.scWidget = SC.Widget(this.soundcloudPlayer);
+            
+            this.scWidget.bind(SC.Widget.Events.READY, () => {
+                console.log('SoundCloud Widget is ready');
                 
-                this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget READY - forcing immediate play');
-                    
-                    // Multiple aggressive attempts to start
-                    for (let i = 0; i < 5; i++) {
-                        setTimeout(() => {
-                            this.scWidget.setVolume(17);
-                            this.scWidget.play();
-                            console.log(`SoundCloud start attempt ${i + 1}`);
-                        }, i * 200);
-                    }
-                    
-                    this.isAudioPlaying = true;
-                });
+                // Set volume and play immediately
+                this.scWidget.setVolume(17);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                console.log('SoundCloud started at 17% volume');
                 
-                // Enable looping when track finishes
-                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('Track finished - restarting for loop');
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                });
-                
-                // Force play on any widget event
-                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-                    setTimeout(() => {
-                        this.scWidget.play();
-                        this.scWidget.setVolume(17);
-                    }, 100);
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                // Additional attempts
+                setTimeout(() => {
                     this.scWidget.setVolume(17);
-                });
-            } else {
-                console.log('SoundCloud API not ready, retrying...');
-                setTimeout(initSoundCloud, 500);
-            }
-        };
-        
-        initSoundCloud();
+                    this.scWidget.play();
+                }, 500);
+            });
+            
+            // Handle track finish for looping
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('SoundCloud track finished - looping');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+            });
+            
+            // Keep volume at 17% whenever playing
+            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                this.scWidget.setVolume(17);
+            });
+            
+        } else {
+            console.log('SoundCloud API not available yet, will retry');
+            setTimeout(() => {
+                if (typeof SC !== 'undefined' && SC.Widget) {
+                    this.scWidget = SC.Widget(this.soundcloudPlayer);
+                    this.scWidget.bind(SC.Widget.Events.READY, () => {
+                        this.scWidget.setVolume(17);
+                        this.scWidget.play();
+                    });
+                }
+            }, 1000);
+        }
     }
 
     playIntroductionSequence() {
@@ -302,15 +300,13 @@ class CinematicWebsite {
     startBackgroundMusic() {
         console.log('Starting background music...');
         
-        // Try SoundCloud first
+        // Force SoundCloud to play
         if (this.scWidget) {
             this.scWidget.setVolume(17);
             this.scWidget.play();
-            console.log('SoundCloud play attempted');
-        }
-        
-        // Start Web Audio backup if not already playing
-        if (!this.isAudioPlaying) {
+            console.log('SoundCloud forced to play at 17% volume');
+        } else {
+            console.log('SoundCloud widget not ready, starting Web Audio backup');
             this.createWebAudioBackground();
         }
     }
@@ -794,11 +790,34 @@ document.addEventListener('DOMContentLoaded', () => {
             // Force Web Audio to start
             window.cinematicWebsite.createWebAudioBackground();
             
-            // Force SoundCloud
+            // Force SoundCloud with multiple attempts
             if (window.cinematicWebsite.scWidget) {
+                console.log('Forcing SoundCloud to start NOW');
                 window.cinematicWebsite.scWidget.setVolume(17);
                 window.cinematicWebsite.scWidget.play();
-                console.log('SoundCloud forced to start');
+                
+                // Backup attempts
+                setTimeout(() => {
+                    window.cinematicWebsite.scWidget.play();
+                    window.cinematicWebsite.scWidget.setVolume(17);
+                }, 1000);
+                
+                setTimeout(() => {
+                    window.cinematicWebsite.scWidget.play();
+                    window.cinematicWebsite.scWidget.setVolume(17);
+                }, 2000);
+            } else {
+                console.log('SoundCloud widget not available, trying to create it');
+                if (typeof SC !== 'undefined' && SC.Widget) {
+                    const player = document.getElementById('soundcloud-player');
+                    if (player) {
+                        window.cinematicWebsite.scWidget = SC.Widget(player);
+                        window.cinematicWebsite.scWidget.bind(SC.Widget.Events.READY, () => {
+                            window.cinematicWebsite.scWidget.setVolume(17);
+                            window.cinematicWebsite.scWidget.play();
+                        });
+                    }
+                }
             }
             
             // Force narrator to start
