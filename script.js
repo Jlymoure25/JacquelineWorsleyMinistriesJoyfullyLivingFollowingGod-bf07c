@@ -49,37 +49,7 @@ class CinematicWebsite {
     }
     
     setupAudio() {
-        // Set up HTML5 audio that actually works
-        this.backgroundAudio = document.getElementById('background-audio');
         this.soundcloudPlayer = document.getElementById('soundcloud-player');
-        
-        if (this.backgroundAudio) {
-            this.backgroundAudio.volume = 0.17; // 17% volume
-            this.backgroundAudio.loop = true;
-            
-            // Force play immediately
-            const startAudio = () => {
-                this.backgroundAudio.play().then(() => {
-                    console.log('HTML5 audio started successfully at 17% volume');
-                    this.isAudioPlaying = true;
-                }).catch(e => {
-                    console.log('HTML5 audio blocked, will start on user interaction:', e);
-                });
-            };
-            
-            // Try to start immediately
-            startAudio();
-            
-            // Also try on any user interaction
-            const forceStart = () => {
-                startAudio();
-                document.removeEventListener('click', forceStart);
-                document.removeEventListener('keydown', forceStart);
-            };
-            
-            document.addEventListener('click', forceStart, { once: true });
-            document.addEventListener('keydown', forceStart, { once: true });
-        }
         
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
@@ -92,8 +62,10 @@ class CinematicWebsite {
             };
         }
         
-        // Keep SoundCloud as backup
-        console.log('Setting up SoundCloud Widget as backup...');
+        // Create Web Audio API background sound as immediate backup
+        this.createWebAudioBackground();
+        
+        console.log('Setting up SoundCloud Widget with immediate force-play...');
         
         // Wait for SoundCloud API to be fully loaded
         const initSoundCloud = () => {
@@ -303,27 +275,43 @@ class CinematicWebsite {
         return this.narratorVoice;
     }
 
+    createWebAudioBackground() {
+        try {
+            // Create Web Audio API context for immediate background sound
+            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.gainNode = this.audioContext.createGain();
+            this.gainNode.gain.value = 0.17; // 17% volume
+            this.gainNode.connect(this.audioContext.destination);
+            
+            // Create a simple ambient tone
+            this.oscillator = this.audioContext.createOscillator();
+            this.oscillator.type = 'sine';
+            this.oscillator.frequency.setValueAtTime(220, this.audioContext.currentTime); // A3 note
+            this.oscillator.connect(this.gainNode);
+            
+            // Start immediately
+            this.oscillator.start();
+            console.log('Web Audio API background tone started at 17% volume');
+            this.isAudioPlaying = true;
+            
+        } catch (e) {
+            console.log('Web Audio API not available:', e);
+        }
+    }
+
     startBackgroundMusic() {
-        // Force HTML5 audio to play
-        if (this.backgroundAudio) {
-            this.backgroundAudio.volume = 0.17;
-            this.backgroundAudio.play().then(() => {
-                console.log('Background music started via HTML5 audio at 17% volume');
-                this.isAudioPlaying = true;
-            }).catch(e => {
-                console.log('Background music blocked, trying SoundCloud backup');
-                // Try SoundCloud backup
-                if (this.scWidget) {
-                    this.scWidget.play();
-                    this.scWidget.setVolume(17);
-                }
-            });
-        } else {
-            console.log('No HTML5 audio found, using SoundCloud only');
-            if (this.scWidget) {
-                this.scWidget.play();
-                this.scWidget.setVolume(17);
-            }
+        console.log('Starting background music...');
+        
+        // Try SoundCloud first
+        if (this.scWidget) {
+            this.scWidget.setVolume(17);
+            this.scWidget.play();
+            console.log('SoundCloud play attempted');
+        }
+        
+        // Start Web Audio backup if not already playing
+        if (!this.isAudioPlaying) {
+            this.createWebAudioBackground();
         }
     }
 
@@ -788,7 +776,7 @@ class CinematicWebsite {
 
 // Initialize when DOM is ready - IMMEDIATE AUTO-START
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded - IMMEDIATE auto-start of everything');
+    console.log('DOM loaded - IMMEDIATE auto-start of EVERYTHING');
     
     // Force speech synthesis to load
     if ('speechSynthesis' in window) {
@@ -798,23 +786,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create website with immediate start
     window.cinematicWebsite = new CinematicWebsite();
     
-    // Force everything to start after a brief delay
+    // IMMEDIATE force start - no delays
     setTimeout(() => {
         if (window.cinematicWebsite) {
-            console.log('FORCING immediate start of all functionality');
+            console.log('FORCING EVERYTHING TO START NOW');
+            
+            // Force Web Audio to start
+            window.cinematicWebsite.createWebAudioBackground();
             
             // Force SoundCloud
             if (window.cinematicWebsite.scWidget) {
-                window.cinematicWebsite.scWidget.play();
                 window.cinematicWebsite.scWidget.setVolume(17);
+                window.cinematicWebsite.scWidget.play();
+                console.log('SoundCloud forced to start');
             }
             
-            // Force narrator if not started
+            // Force narrator to start
             if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
+                console.log('Force starting narrator NOW');
                 window.cinematicWebsite.startIntroductoryNarration();
             }
         }
-    }, 2000);
+    }, 100); // Minimal delay
 });
 
 // Global functions for "Begin Your Journey" button compatibility
