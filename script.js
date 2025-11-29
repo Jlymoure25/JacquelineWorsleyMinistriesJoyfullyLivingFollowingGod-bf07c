@@ -872,3 +872,4 @@ document.addEventListener('keydown', function forceAudioStartKey() {
 }, { once: true });
 
 // Deployment trigger Sat Nov 29 03:46:36 UTC 2025
+// Full functionality restored Sat Nov 29 04:36:19 UTC 2025
