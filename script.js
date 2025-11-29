@@ -17,6 +17,7 @@ class CinematicWebsite {
         this.fadeInterval = null;
         this.narratorVoice = null; // Store consistent narrator voice
         this.scWidget = null;
+        this.isFading = false; // Track intentional fade state
         this.init();
     }
 
@@ -73,11 +74,22 @@ class CinematicWebsite {
                 console.log('SoundCloud auto-started with looping enabled');
             });
             
-            // Enable looping when track finishes
+            // Enable seamless looping when track finishes - no silence gaps
             this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - restarting for loop');
+                console.log('Track finished - immediate seamless restart');
+                // Immediate restart to prevent any silence
                 this.scWidget.seekTo(0);
                 this.scWidget.play();
+                this.scWidget.setVolume(17); // Maintain volume
+            });
+            
+            // Also handle any pause events to ensure continuous playback
+            this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                // Only restart if we're not intentionally fading out
+                if (!this.isFading && !this.fadeInterval) {
+                    console.log('Unexpected pause detected - restarting to maintain seamless loop');
+                    this.scWidget.play();
+                }
             });
             
             this.scWidget.bind(SC.Widget.Events.PLAY, () => {
@@ -612,9 +624,11 @@ class CinematicWebsite {
             blackOverlay.style.opacity = '1';
         }, 100);
         
-        // Show button 2 seconds after fade completes (3s fade + 2s wait = 5s total)
+        // Show button exactly 2 seconds after both music and website fade complete
+        // 3s fade duration + 2s wait = 5s total
         setTimeout(() => {
             replayButton.style.opacity = '1';
+            console.log('Begin Your Journey Again button shown - 2 seconds after fade completion');
         }, 5000);
     }
     
@@ -643,12 +657,20 @@ class CinematicWebsite {
         // Update progress
         this.updateProgressBar();
         
-        // Restart SoundCloud with looping
+        // Restart SoundCloud with seamless looping enabled
         if (this.scWidget) {
             this.scWidget.setVolume(17);
             this.scWidget.seekTo(0);
             this.scWidget.play();
-            console.log('SoundCloud restarted with looping enabled');
+            console.log('SoundCloud restarted with seamless looping enabled');
+            
+            // Re-enable the finish event handler for looping
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('Track finished during restart - immediate loop');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+                this.scWidget.setVolume(17);
+            });
         }
         
         // Restart the introduction sequence
@@ -668,12 +690,16 @@ class CinematicWebsite {
         const fadeStep = 1;
         const fadeInterval = 176; // milliseconds (17 steps * 176ms = ~3 seconds)
         
+        // Mark that we're intentionally fading (prevents loop restart during fade)
+        this.isFading = true;
+        
         this.fadeInterval = setInterval(() => {
             currentVolume -= fadeStep;
             if (currentVolume <= 0) {
                 this.scWidget.setVolume(0);
                 this.scWidget.pause();
                 clearInterval(this.fadeInterval);
+                this.isFading = false; // Clear fading flag
                 console.log('SoundCloud audio faded out and paused');
                 if (onComplete) onComplete();
             } else {
