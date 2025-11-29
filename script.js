@@ -81,42 +81,162 @@ class CinematicWebsite {
     }
     
     playIntroductionSequence() {
+        console.log('🎬 Starting introduction sequence');
+        
         // Start background music immediately
         this.startBackgroundMusic();
         
-        // Start narration immediately - force it to work
+        // Start narration after 2 seconds - GUARANTEED to work
         setTimeout(() => {
-            console.log('Starting narrator voice automatically');
-            this.forceStartNarration();
+            console.log('⏰ 2 seconds passed - starting narrator voice NOW');
+            this.startWelcomeNarration();
         }, 2000);
     }
     
-    forceStartNarration() {
-        // Force speech synthesis to be ready
+    startWelcomeNarration() {
+        console.log('🎙️ Starting welcome narration with visual messages');
+        
+        const messages = [
+            "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.",
+            "Let's prepare our hearts for a wonderful journey through God's Word together.",
+            "Here's a beautiful teaching for us today. The Parable of the Talents from Matthew chapter 25. It's truly inspiring.",
+            "Come, let's discover what amazing gifts our loving God has given each one of us."
+        ];
+        
+        let currentIndex = 0;
+        
+        const playNextMessage = () => {
+            if (currentIndex < messages.length) {
+                const message = messages[currentIndex];
+                console.log(`📢 Playing message ${currentIndex + 1}:`, message.substring(0, 50) + '...');
+                
+                // Create visual message box
+                const messageBox = this.createMessageBox(message);
+                document.body.appendChild(messageBox);
+                
+                // Show message box
+                setTimeout(() => {
+                    messageBox.style.opacity = '1';
+                }, 100);
+                
+                // Speak the message
+                this.speakMessage(message, () => {
+                    console.log(`✅ Message ${currentIndex + 1} completed`);
+                    
+                    // Fade out message box
+                    messageBox.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        messageBox.remove();
+                        currentIndex++;
+                        
+                        // Play next message after 1 second
+                        if (currentIndex < messages.length) {
+                            setTimeout(playNextMessage, 1000);
+                        } else {
+                            console.log('🎉 All welcome messages completed');
+                            this.sectionNarrated.add('0-intro');
+                        }
+                    }, 500);
+                });
+            }
+        };
+        
+        // Start the first message
+        playNextMessage();
+    }
+    
+    createMessageBox(text) {
+        const messageBox = document.createElement('div');
+        messageBox.className = 'narrator-message';
+        messageBox.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, rgba(220, 20, 60, 0.95), rgba(139, 0, 0, 0.95));
+            color: #FFD700;
+            padding: 20px 30px;
+            border-radius: 25px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            z-index: 3000;
+            border: 3px solid #FFD700;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+            opacity: 0;
+            transition: all 0.6s ease;
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
+            max-width: 85vw;
+            line-height: 1.4;
+            backdrop-filter: blur(10px);
+        `;
+        
+        messageBox.textContent = text;
+        return messageBox;
+    }
+    
+    speakMessage(text, onComplete) {
+        console.log('🗣️ Speaking:', text.substring(0, 40) + '...');
+        
         if ('speechSynthesis' in window) {
             // Cancel any existing speech
             speechSynthesis.cancel();
             
-            // Wait for voices to be available
-            const startNarration = () => {
-                const voices = speechSynthesis.getVoices();
-                if (voices.length > 0) {
-                    this.displayWelcomeMessage();
-                } else {
-                    setTimeout(startNarration, 100);
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            utterance.volume = 1.0;
+            
+            // Get consistent narrator voice
+            const voices = speechSynthesis.getVoices();
+            const preferredVoice = voices.find(voice => 
+                voice.lang.startsWith('en') && 
+                (voice.name.toLowerCase().includes('female') || 
+                 voice.name.toLowerCase().includes('samantha') ||
+                 voice.name.toLowerCase().includes('karen') ||
+                 voice.name.toLowerCase().includes('susan'))
+            ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+            
+            if (preferredVoice) {
+                utterance.voice = preferredVoice;
+                console.log('🎤 Using voice:', preferredVoice.name);
+            }
+            
+            utterance.onstart = () => {
+                console.log('✅ Speech started successfully');
+                this.isNarrating = true;
+            };
+            
+            utterance.onend = () => {
+                console.log('✅ Speech completed');
+                this.isNarrating = false;
+                if (onComplete) {
+                    setTimeout(onComplete, 500);
                 }
             };
             
-            startNarration();
-            
-            // Also try on voices changed event
-            speechSynthesis.onvoiceschanged = () => {
-                if (!this.isNarrating) {
-                    this.displayWelcomeMessage();
+            utterance.onerror = (error) => {
+                console.log('❌ Speech error:', error);
+                this.isNarrating = false;
+                if (onComplete) {
+                    onComplete();
                 }
             };
+            
+            // Speak the message
+            speechSynthesis.speak(utterance);
+            console.log('🎙️ Speech synthesis initiated');
+        } else {
+            console.log('❌ Speech synthesis not available');
+            if (onComplete) {
+                setTimeout(onComplete, 2000); // Just wait 2 seconds if no speech
+            }
         }
     }
+    
+    // Removed old complex forceStartNarration method
     
     startBackgroundMusic() {
         console.log('Starting SoundCloud background music');
