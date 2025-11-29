@@ -67,49 +67,29 @@ class CinematicWebsite {
         
         console.log('Setting up SoundCloud Widget with immediate force-play...');
         
-        // Initialize SoundCloud Widget API properly
+        // Initialize SoundCloud Widget API
         if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
             this.scWidget = SC.Widget(this.soundcloudPlayer);
             
             this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget is ready');
-                
-                // Set volume and play immediately
+                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
                 this.scWidget.setVolume(17);
+                this.scWidget.seekTo(0);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
-                console.log('SoundCloud started at 17% volume');
-                
-                // Additional attempts
-                setTimeout(() => {
-                    this.scWidget.setVolume(17);
-                    this.scWidget.play();
-                }, 500);
+                console.log('SoundCloud auto-started with looping enabled');
             });
             
-            // Handle track finish for looping
+            // Enable looping when track finishes
             this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('SoundCloud track finished - looping');
+                console.log('Track finished - restarting for loop');
                 this.scWidget.seekTo(0);
                 this.scWidget.play();
             });
             
-            // Keep volume at 17% whenever playing
             this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                 this.scWidget.setVolume(17);
             });
-            
-        } else {
-            console.log('SoundCloud API not available yet, will retry');
-            setTimeout(() => {
-                if (typeof SC !== 'undefined' && SC.Widget) {
-                    this.scWidget = SC.Widget(this.soundcloudPlayer);
-                    this.scWidget.bind(SC.Widget.Events.READY, () => {
-                        this.scWidget.setVolume(17);
-                        this.scWidget.play();
-                    });
-                }
-            }, 1000);
         }
     }
 
@@ -298,17 +278,8 @@ class CinematicWebsite {
     }
 
     startBackgroundMusic() {
-        console.log('Starting background music...');
-        
-        // Force SoundCloud to play
-        if (this.scWidget) {
-            this.scWidget.setVolume(17);
-            this.scWidget.play();
-            console.log('SoundCloud forced to play at 17% volume');
-        } else {
-            console.log('SoundCloud widget not ready, starting Web Audio backup');
-            this.createWebAudioBackground();
-        }
+        console.log('Background music started via SoundCloud');
+        // Music is handled by SoundCloud widget
     }
 
     initializeSoundCloudPlayer() {
