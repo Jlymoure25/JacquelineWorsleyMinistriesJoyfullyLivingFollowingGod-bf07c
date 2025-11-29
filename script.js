@@ -624,12 +624,11 @@ class CinematicWebsite {
             blackOverlay.style.opacity = '1';
         }, 100);
         
-        // Show button exactly 2 seconds after both music and website fade complete
-        // 3s fade duration + 2s wait = 5s total
+        // Show button exactly 2 seconds after fade starts
         setTimeout(() => {
             replayButton.style.opacity = '1';
-            console.log('Begin Your Journey Again button shown - 2 seconds after fade completion');
-        }, 5000);
+            console.log('Begin Your Journey Again button shown - exactly 2 seconds');
+        }, 2000);
     }
     
     restartJourney() {
