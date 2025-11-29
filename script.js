@@ -334,16 +334,9 @@ class CinematicWebsite {
             this.currentSection = sectionIndex;
             this.sections[this.currentSection].classList.add('active');
             
-            // Continue audio at final section and then fade-out
+            // Audio continues playing until thanksgiving narration completes
             if (sectionIndex === this.totalSections - 1) {
-                console.log('Final section reached - audio will fade out at end');
-                if (this.soundcloudPlayer) {
-                    // Audio continues playing, then fades out after 2 minutes
-                    setTimeout(() => {
-                        console.log('Starting SoundCloud fade-out at end of video');
-                        this.fadeOutSoundCloudAudio();
-                    }, 120000); // 2 minutes
-                }
+                console.log('Final section reached - audio will continue until thanksgiving narration ends');
             }
             
             this.updateProgressBar();
@@ -385,7 +378,7 @@ class CinematicWebsite {
             
             'closing': "Until Next Time. Join us next time as we take another trip in the WORD OF GOD. Joyfully Living Following God.",
             
-            'thanksgiving': "HAPPY THANKSGIVING EVERYONE EVERYBODY from Jacqueline Worsley Ministries Joyfully Living Following God. Thanksgiving is a lifestyle not just a one day celebration. Hashtag thank God everyday all the time from whom all blessings flow. Take Care and May God Bless You With His Choice Blessings. GOD FIRST."
+            'thanksgiving': "HAPPY THANKSGIVING EVERYONE EVERYBODY from Jacqueline Worsley Ministries Joyfully Living Following God. Thanksgiving is a lifestyle not just a one day celebration. Hashtag thank God everyday all the time from whom all blessings flow. Take Care and May God Bless You With His Choice Blessings. GOD FIRST. Thank You For Joining Us! God Bless You!"
         };
 
         // Only narrate specific parable sections
@@ -478,23 +471,21 @@ class CinematicWebsite {
     handleFinalEnding() {
         console.log('Handling final ending sequence');
         
-        // Fade out audio after 2 seconds
-        setTimeout(() => {
-            console.log('Starting audio fade out');
-            if (this.scWidget) {
-                this.fadeOutSoundCloudAudio(() => {
-                    // After audio fades, wait 2 seconds then fade to black
-                    setTimeout(() => {
-                        this.fadeToBlackAndShowReplay();
-                    }, 2000);
-                });
-            } else {
-                // If no audio widget, just fade to black after 2 seconds
+        // Start audio fade out immediately after thanksgiving narration completes
+        console.log('Starting audio fade out');
+        if (this.scWidget) {
+            this.fadeOutSoundCloudAudio(() => {
+                // After audio fades, wait 5 seconds then fade to black
                 setTimeout(() => {
                     this.fadeToBlackAndShowReplay();
-                }, 2000);
-            }
-        }, 2000);
+                }, 5000);
+            });
+        } else {
+            // If no audio widget, just fade to black after 5 seconds
+            setTimeout(() => {
+                this.fadeToBlackAndShowReplay();
+            }, 5000);
+        }
     }
     
     fadeToBlackAndShowReplay() {
