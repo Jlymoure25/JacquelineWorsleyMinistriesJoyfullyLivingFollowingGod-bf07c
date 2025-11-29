@@ -84,10 +84,38 @@ class CinematicWebsite {
         // Start background music immediately
         this.startBackgroundMusic();
         
-        // Start narration immediately
+        // Start narration immediately - force it to work
         setTimeout(() => {
-            this.displayWelcomeMessage();
+            console.log('Starting narrator voice automatically');
+            this.forceStartNarration();
         }, 2000);
+    }
+    
+    forceStartNarration() {
+        // Force speech synthesis to be ready
+        if ('speechSynthesis' in window) {
+            // Cancel any existing speech
+            speechSynthesis.cancel();
+            
+            // Wait for voices to be available
+            const startNarration = () => {
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    this.displayWelcomeMessage();
+                } else {
+                    setTimeout(startNarration, 100);
+                }
+            };
+            
+            startNarration();
+            
+            // Also try on voices changed event
+            speechSynthesis.onvoiceschanged = () => {
+                if (!this.isNarrating) {
+                    this.displayWelcomeMessage();
+                }
+            };
+        }
     }
     
     startBackgroundMusic() {
@@ -100,6 +128,8 @@ class CinematicWebsite {
     }
     
     displayWelcomeMessage() {
+        console.log('displayWelcomeMessage called - starting narrator voice');
+        
         const messages = [
             "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.",
             "Let's prepare our hearts for a wonderful journey through God's Word together.",
@@ -110,8 +140,10 @@ class CinematicWebsite {
         let messageIndex = 0;
         
         const showMessage = () => {
-            if (messageIndex < messages.length) {
-                // Show visual message
+            if (messageIndex < messages.length && this.currentSection === 0) {
+                console.log('Showing message:', messageIndex + 1, 'of', messages.length);
+                
+                // Create and show visual message box
                 const messageDisplay = document.createElement('div');
                 messageDisplay.className = 'voice-message';
                 messageDisplay.style.cssText = `
@@ -120,87 +152,91 @@ class CinematicWebsite {
                     left: 50%;
                     transform: translateX(-50%);
                     background: linear-gradient(45deg, rgba(220, 20, 60, 0.9), rgba(139, 0, 0, 0.9));
-                    color: var(--gold);
+                    color: #FFD700;
                     padding: 1.5rem 2.5rem;
                     border-radius: 20px;
                     font-size: 1.3rem;
                     font-weight: 600;
                     z-index: 2000;
-                    border: 3px solid var(--gold);
+                    border: 3px solid #FFD700;
                     box-shadow: 0 15px 40px rgba(0,0,0,0.6);
                     opacity: 0;
                     transition: all 0.5s ease;
                     text-align: center;
                     font-family: 'Playfair Display', serif;
                     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                    max-width: 80vw;
                 `;
                 
                 messageDisplay.textContent = messages[messageIndex];
                 document.body.appendChild(messageDisplay);
                 
+                // Fade in the message
                 setTimeout(() => {
                     messageDisplay.style.opacity = '1';
                 }, 100);
                 
-                // Speak the message
-                this.speakText(messages[messageIndex], () => {
+                // Speak the message using consistent narrator voice
+                console.log('Speaking message:', messages[messageIndex].substring(0, 30) + '...');
+                
+                const onMessageComplete = () => {
+                    console.log('Message', messageIndex + 1, 'completed');
+                    // Fade out message
                     messageDisplay.style.opacity = '0';
                     setTimeout(() => {
                         messageDisplay.remove();
                         messageIndex++;
                         if (messageIndex < messages.length) {
-                            setTimeout(showMessage, 500);
+                            setTimeout(showMessage, 1000); // 1 second pause between messages
                         } else {
+                            console.log('All welcome messages completed');
                             this.sectionNarrated.add('0-intro');
                         }
                     }, 500);
-                });
+                };
+                
+                this.speakText(messages[messageIndex], onMessageComplete);
             }
         };
         
+        // Start immediately
         showMessage();
     }
     
     speakText(text, onComplete = null) {
+        console.log('speakText called with:', text.substring(0, 50) + '...');
+        
         if ('speechSynthesis' in window) {
+            // Cancel any existing speech
             speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            utterance.volume = 1.0;
+            utterance.rate = 0.9;   // Natural conversational pace
+            utterance.pitch = 1.1;  // Slight uplift for warmth
+            utterance.volume = 1.0;  // Maximum volume
             
-            // Use consistent narrator voice for ALL narration
-            const narratorVoice = this.getNarratorVoice();
+            // Get consistent narrator voice
+            const voices = speechSynthesis.getVoices();
+            console.log('Available voices:', voices.length);
+            
+            // Use the same voice selection logic as parable narration
+            const narratorVoice = voices.find(voice => 
+                (voice.name.toLowerCase().includes('samantha') ||
+                voice.name.toLowerCase().includes('karen') ||
+                voice.name.toLowerCase().includes('susan') ||
+                voice.name.toLowerCase().includes('victoria') ||
+                voice.name.toLowerCase().includes('female')) &&
+                voice.lang.startsWith('en')
+            ) || voices.find(voice => 
+                voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
+            ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+            
             if (narratorVoice) {
                 utterance.voice = narratorVoice;
-            }
-            
-            this.isNarrating = true;
-            this.currentUtterance = utterance;
-            
-            utterance.onend = () => {
-                this.isNarrating = false;
-                this.currentUtterance = null;
-                console.log('Narration completed:', text.substring(0, 30) + '...');
-                if (onComplete) {
-                    setTimeout(onComplete, 1200);
-                }
-            };
-            
-            utterance.onerror = () => {
-                this.isNarrating = false;
-                this.currentUtterance = null;
-                console.log('Speech synthesis error');
-                if (onComplete) {
-                    onComplete();
-                }
-            };
-            
-            speechSynthesis.speak(utterance);
-            console.log('Speaking:', text.substring(0, 30) + '...');
-        }
-    }
+                console.log('Using narrator voice:', narratorVoice.name);
+            } else {
+                console.log('No narrator voice found, using default');
+            }\n            \n            this.isNarrating = true;\n            this.currentUtterance = utterance;\n            \n            utterance.onstart = () => {\n                console.log('✅ Speech started successfully!');\n            };\n            \n            utterance.onend = () => {\n                this.isNarrating = false;\n                this.currentUtterance = null;\n                console.log('✅ Speech completed:', text.substring(0, 30) + '...');\n                if (onComplete) {\n                    setTimeout(onComplete, 1000); // Shorter pause\n                }\n            };\n            \n            utterance.onerror = (event) => {\n                this.isNarrating = false;\n                this.currentUtterance = null;\n                console.log('❌ Speech synthesis error:', event.error);\n                if (onComplete) {\n                    onComplete();\n                }\n            };\n            \n            // Start speaking\n            speechSynthesis.speak(utterance);\n            console.log('🎙️ Speech synthesis started');\n        } else {\n            console.log('❌ Speech synthesis not supported');\n            if (onComplete) {\n                onComplete();\n            }\n        }\n    }
     
     getNarratorVoice() {
         if (!this.narratorVoice) {
