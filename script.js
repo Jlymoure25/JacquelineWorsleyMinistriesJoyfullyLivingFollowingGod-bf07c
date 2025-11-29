@@ -65,12 +65,19 @@ class CinematicWebsite {
             this.scWidget = SC.Widget(this.soundcloudPlayer);
             
             this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume');
+                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
                 this.scWidget.setVolume(17);
                 this.scWidget.seekTo(0);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started');
+                console.log('SoundCloud auto-started with looping enabled');
+            });
+            
+            // Enable looping when track finishes
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('Track finished - restarting for loop');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
             });
             
             this.scWidget.bind(SC.Widget.Events.PLAY, () => {
@@ -378,7 +385,7 @@ class CinematicWebsite {
             
             'closing': "Until Next Time. Join us next time as we take another trip in the WORD OF GOD. Joyfully Living Following God.",
             
-            'thanksgiving': "HAPPY THANKSGIVING EVERYONE EVERYBODY from Jacqueline Worsley Ministries Joyfully Living Following God. Thanksgiving is a lifestyle not just a one day celebration. Hashtag thank God everyday all the time from whom all blessings flow. Take Care and May God Bless You With His Choice Blessings. GOD FIRST. Thank You For Joining Us! God Bless You!"
+            'thanksgiving': "HAPPY THANKSGIVING EVERYONE EVERYBODY from Jacqueline Worsley Ministries Joyfully Living Following God. Thanksgiving is a lifestyle not just a one day celebration. Hashtag thank God everyday all the time from whom all blessings flow. Take Care and May God Bless You With His Choice Blessings. GOD FIRST."
         };
 
         // Only narrate specific parable sections
@@ -393,7 +400,7 @@ class CinematicWebsite {
                     
                     // Special handling for thanksgiving section - final section
                     if (currentSectionId === 'thanksgiving') {
-                        this.handleFinalEnding();
+                        this.showThankYouMessage();
                     } else {
                         // Auto-advance after narration with a brief pause
                         if (this.currentSection < this.totalSections - 1) {
@@ -468,10 +475,70 @@ class CinematicWebsite {
 
     // displayMessageTakeaway removed - now handled in main narration flow
 
+    showThankYouMessage() {
+        console.log('Showing Thank You message box with narration');
+        
+        setTimeout(() => {
+            // Create thank you message box
+            const thankYouBox = document.createElement('div');
+            thankYouBox.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, rgba(220, 20, 60, 0.95), rgba(139, 0, 0, 0.95));
+                color: #FFD700;
+                padding: 40px 60px;
+                border-radius: 30px;
+                font-size: 2rem;
+                font-weight: 700;
+                z-index: 4000;
+                border: 4px solid #FFD700;
+                box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+                text-align: center;
+                font-family: 'Playfair Display', serif;
+                text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+                opacity: 0;
+                transition: opacity 1s ease;
+                backdrop-filter: blur(15px);
+                line-height: 1.4;
+            `;
+            
+            thankYouBox.innerHTML = `
+                Thank You For Joining Us.<br>
+                God Bless You.
+            `;
+            
+            document.body.appendChild(thankYouBox);
+            
+            // Show the message box
+            setTimeout(() => {
+                thankYouBox.style.opacity = '1';
+            }, 100);
+            
+            // Start narrating the thank you message
+            const thankYouMessage = "Thank You For Joining Us. God Bless You.";
+            
+            const onThankYouComplete = () => {
+                console.log('Thank you narration completed');
+                
+                // Fade out the message box
+                thankYouBox.style.opacity = '0';
+                
+                setTimeout(() => {
+                    thankYouBox.remove();
+                    this.handleFinalEnding();
+                }, 1000);
+            };
+            
+            this.speakText(thankYouMessage, onThankYouComplete);
+        }, 2000); // 2 second pause after thanksgiving section
+    }
+    
     handleFinalEnding() {
         console.log('Handling final ending sequence');
         
-        // Start audio fade out immediately after thanksgiving narration completes
+        // Start audio fade out immediately after thank you narration completes
         console.log('Starting audio fade out');
         if (this.scWidget) {
             this.fadeOutSoundCloudAudio(() => {
@@ -581,11 +648,12 @@ class CinematicWebsite {
         // Update progress
         this.updateProgressBar();
         
-        // Restart SoundCloud
+        // Restart SoundCloud with looping
         if (this.scWidget) {
             this.scWidget.setVolume(17);
             this.scWidget.seekTo(0);
             this.scWidget.play();
+            console.log('SoundCloud restarted with looping enabled');
         }
         
         // Restart the introduction sequence
