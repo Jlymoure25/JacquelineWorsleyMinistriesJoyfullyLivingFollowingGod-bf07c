@@ -16,28 +16,18 @@ class CinematicWebsite {
         this.soundcloudPlayer = null;
         this.fadeInterval = null;
         this.narratorVoice = null; // Store consistent narrator voice
-        this.audioStarted = false;
-        this.narrationStarted = false;
+        this.soundcloudPlayer = null;
+        this.scWidget = null;
         this.init();
-        
-        // Ensure audio starts on any click
-        document.addEventListener('click', () => {
-            const audio = document.getElementById('backgroundAudio');
-            if (audio && !this.isAudioPlaying) {
-                audio.play();
-                this.isAudioPlaying = true;
-            }
-            
-            if (!this.isNarrating) {
-                this.speakWelcomeMessage();
-            }
-        });
     }
 
     init() {
         // Get all sections
         this.sections = document.querySelectorAll('.section');
         this.totalSections = this.sections.length;
+        
+        // Setup audio with original working method
+        this.setupAudio();
         
         // Setup navigation
         this.setupNavigation();
@@ -48,95 +38,189 @@ class CinematicWebsite {
         // Update progress bar
         this.updateProgressBar();
         
-        // Start audio and narration immediately
-        this.startAudioAndNarration();
+        // Start with a cinematic entrance (original method)
+        this.playIntroductionSequence();
         
-        console.log('Website initialized');
+        // Initialize SoundCloud player
+        this.initializeSoundCloudPlayer();
         
-        // Make function globally available
-        window.startAudioAndNarration = () => {
-            this.startAudioAndNarration();
-        };
+        console.log('Jacqueline Worsley Ministries website initialized with audio timeline');
     }
     
-    startAudioAndNarration() {
-        // Start audio immediately
-        const audio = document.getElementById('backgroundAudio');
-        if (audio) {
-            audio.play();
-            this.isAudioPlaying = true;
-            console.log('Audio started');
+    setupAudio() {
+        this.soundcloudPlayer = document.getElementById('soundcloud-player');
+        
+        // Initialize speech synthesis
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                console.log('Speech synthesis voices loaded');
+                // Reset narrator voice to ensure consistency
+                this.narratorVoice = null;
+                this.getNarratorVoice();
+            };
         }
+        
+        // Initialize SoundCloud Widget API
+        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+            this.scWidget = SC.Widget(this.soundcloudPlayer);
+            
+            this.scWidget.bind(SC.Widget.Events.READY, () => {
+                console.log('SoundCloud Widget API ready - enforcing 17% volume');
+                this.scWidget.setVolume(17);
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                console.log('SoundCloud auto-started');
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                this.scWidget.setVolume(17);
+            });
+        }
+    }
+    
+    playIntroductionSequence() {
+        // Start background music immediately
+        this.startBackgroundMusic();
         
         // Start narration immediately
         setTimeout(() => {
-            this.speakWelcomeMessage();
-        }, 1000);
+            this.displayWelcomeMessage();
+        }, 2000);
     }
     
-    speakWelcomeMessage() {
-        const message = "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.";
-        
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(message);
-            utterance.rate = 0.9;
-            utterance.pitch = 1.1;
-            utterance.volume = 1.0;
-            
-            const voices = speechSynthesis.getVoices();
-            const voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
-            if (voice) {
-                utterance.voice = voice;
-            }
-            
-            utterance.onend = () => {
-                setTimeout(() => {
-                    this.speakNextMessage();
-                }, 2000);
-            };
-            
-            speechSynthesis.speak(utterance);
-            this.isNarrating = true;
-            console.log('Narration started');
+    startBackgroundMusic() {
+        console.log('Starting SoundCloud background music');
+        if (this.soundcloudPlayer && this.scWidget) {
+            this.scWidget.play();
+            this.scWidget.setVolume(17);
+            this.isAudioPlaying = true;
         }
     }
     
-    speakNextMessage() {
+    displayWelcomeMessage() {
         const messages = [
+            "Welcome, dear friends, to Jacqueline Worsley Ministries. We're so blessed you're here with us today.",
             "Let's prepare our hearts for a wonderful journey through God's Word together.",
             "Here's a beautiful teaching for us today. The Parable of the Talents from Matthew chapter 25. It's truly inspiring.",
             "Come, let's discover what amazing gifts our loving God has given each one of us."
         ];
         
-        let index = 0;
+        let messageIndex = 0;
         
-        const speakNext = () => {
-            if (index < messages.length) {
-                const utterance = new SpeechSynthesisUtterance(messages[index]);
-                utterance.rate = 0.9;
-                utterance.pitch = 1.1;
-                utterance.volume = 1.0;
+        const showMessage = () => {
+            if (messageIndex < messages.length) {
+                // Show visual message
+                const messageDisplay = document.createElement('div');
+                messageDisplay.className = 'voice-message';
+                messageDisplay.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: linear-gradient(45deg, rgba(220, 20, 60, 0.9), rgba(139, 0, 0, 0.9));
+                    color: var(--gold);
+                    padding: 1.5rem 2.5rem;
+                    border-radius: 20px;
+                    font-size: 1.3rem;
+                    font-weight: 600;
+                    z-index: 2000;
+                    border: 3px solid var(--gold);
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+                    opacity: 0;
+                    transition: all 0.5s ease;
+                    text-align: center;
+                    font-family: 'Playfair Display', serif;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                `;
                 
-                const voices = speechSynthesis.getVoices();
-                const voice = voices.find(v => v.lang.startsWith('en')) || voices[0];
-                if (voice) {
-                    utterance.voice = voice;
-                }
+                messageDisplay.textContent = messages[messageIndex];
+                document.body.appendChild(messageDisplay);
                 
-                utterance.onend = () => {
-                    index++;
-                    if (index < messages.length) {
-                        setTimeout(speakNext, 2000);
-                    } else {
-                        this.isNarrating = false;
-                    }
-                };
+                setTimeout(() => {
+                    messageDisplay.style.opacity = '1';
+                }, 100);
                 
-                speechSynthesis.speak(utterance);
+                // Speak the message
+                this.speakText(messages[messageIndex], () => {
+                    messageDisplay.style.opacity = '0';
+                    setTimeout(() => {
+                        messageDisplay.remove();
+                        messageIndex++;
+                        if (messageIndex < messages.length) {
+                            setTimeout(showMessage, 500);
+                        } else {
+                            this.sectionNarrated.add('0-intro');
+                        }
+                    }, 500);
+                });
             }
         };
         
-        speakNext();
+        showMessage();
+    }
+    
+    speakText(text, onComplete = null) {
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            utterance.volume = 1.0;
+            
+            // Use consistent narrator voice for ALL narration
+            const narratorVoice = this.getNarratorVoice();
+            if (narratorVoice) {
+                utterance.voice = narratorVoice;
+            }
+            
+            this.isNarrating = true;
+            this.currentUtterance = utterance;
+            
+            utterance.onend = () => {
+                this.isNarrating = false;
+                this.currentUtterance = null;
+                console.log('Narration completed:', text.substring(0, 30) + '...');
+                if (onComplete) {
+                    setTimeout(onComplete, 1200);
+                }
+            };
+            
+            utterance.onerror = () => {
+                this.isNarrating = false;
+                this.currentUtterance = null;
+                console.log('Speech synthesis error');
+                if (onComplete) {
+                    onComplete();
+                }
+            };
+            
+            speechSynthesis.speak(utterance);
+            console.log('Speaking:', text.substring(0, 30) + '...');
+        }
+    }
+    
+    getNarratorVoice() {
+        if (!this.narratorVoice) {
+            const voices = speechSynthesis.getVoices();
+            this.narratorVoice = voices.find(voice => 
+                (voice.name.toLowerCase().includes('samantha') ||
+                voice.name.toLowerCase().includes('karen') ||
+                voice.name.toLowerCase().includes('susan') ||
+                voice.name.toLowerCase().includes('victoria') ||
+                voice.name.toLowerCase().includes('female')) &&
+                voice.lang.startsWith('en')
+            ) || voices.find(voice => 
+                voice.lang.startsWith('en') && voice.name.toLowerCase().includes('female')
+            ) || voices.find(voice => voice.lang.startsWith('en'));
+            
+            if (this.narratorVoice) {
+                console.log('Narrator voice selected:', this.narratorVoice.name);
+            }
+        }
+        return this.narratorVoice;
     }
     
     forceStartEverything() {
