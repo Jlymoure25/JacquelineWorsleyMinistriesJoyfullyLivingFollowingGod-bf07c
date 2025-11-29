@@ -67,30 +67,50 @@ class CinematicWebsite {
         
         console.log('Setting up SoundCloud Widget with immediate force-play...');
         
-        // Initialize SoundCloud Widget API
-        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-            this.scWidget = SC.Widget(this.soundcloudPlayer);
-            
-            this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
-            });
-            
-            // Enable looping when track finishes
-            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - restarting for loop');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-            });
-            
-            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                this.scWidget.setVolume(17);
-            });
-        }
+        // Wait for SoundCloud API to be available
+        const initSoundCloudWidget = () => {
+            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+                console.log('Initializing SoundCloud Widget...');
+                this.scWidget = SC.Widget(this.soundcloudPlayer);
+                
+                this.scWidget.bind(SC.Widget.Events.READY, () => {
+                    console.log('SoundCloud Widget is READY - starting playback');
+                    
+                    // Force play with volume
+                    this.scWidget.setVolume(17);
+                    this.scWidget.play().then(() => {
+                        console.log('SoundCloud playback started successfully');
+                        this.isAudioPlaying = true;
+                    }).catch(error => {
+                        console.log('SoundCloud play failed:', error);
+                        this.createWebAudioBackground();
+                    });
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                    console.log('Track finished - looping');
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                    this.scWidget.setVolume(17);
+                    console.log('SoundCloud playing at 17% volume');
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                    console.log('SoundCloud paused - restarting');
+                    setTimeout(() => this.scWidget.play(), 100);
+                });
+                
+            } else {
+                console.log('SoundCloud API not ready, retrying in 500ms...');
+                setTimeout(initSoundCloudWidget, 500);
+            }
+        };
+        
+        // Start initialization
+        setTimeout(initSoundCloudWidget, 100);
     }
 
     playIntroductionSequence() {
@@ -761,37 +781,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Force Web Audio to start
             window.cinematicWebsite.createWebAudioBackground();
             
-            // Force SoundCloud with multiple attempts
+            // Force all audio to start
             if (window.cinematicWebsite.scWidget) {
-                console.log('Forcing SoundCloud to start NOW');
+                console.log('Forcing SoundCloud to play NOW');
                 window.cinematicWebsite.scWidget.setVolume(17);
                 window.cinematicWebsite.scWidget.play();
-                
-                // Backup attempts
-                setTimeout(() => {
-                    window.cinematicWebsite.scWidget.play();
-                    window.cinematicWebsite.scWidget.setVolume(17);
-                }, 1000);
-                
-                setTimeout(() => {
-                    window.cinematicWebsite.scWidget.play();
-                    window.cinematicWebsite.scWidget.setVolume(17);
-                }, 2000);
             } else {
-                console.log('SoundCloud widget not available, trying to create it');
-                if (typeof SC !== 'undefined' && SC.Widget) {
-                    const player = document.getElementById('soundcloud-player');
-                    if (player) {
-                        window.cinematicWebsite.scWidget = SC.Widget(player);
-                        window.cinematicWebsite.scWidget.bind(SC.Widget.Events.READY, () => {
-                            window.cinematicWebsite.scWidget.setVolume(17);
-                            window.cinematicWebsite.scWidget.play();
-                        });
-                    }
-                }
-            }
-            
-            // Force narrator to start
+                console.log('SoundCloud not ready, starting Web Audio backup');
+                window.cinematicWebsite.createWebAudioBackground();
+            }            // Force narrator to start
             if (!window.cinematicWebsite.sectionNarrated.has('0-intro')) {
                 console.log('Force starting narrator NOW');
                 window.cinematicWebsite.startIntroductoryNarration();
