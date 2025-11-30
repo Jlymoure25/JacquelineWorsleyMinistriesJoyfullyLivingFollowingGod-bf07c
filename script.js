@@ -55,23 +55,17 @@ class CinematicWebsite {
     }
     
     addAutoStartListener() {
-        const startAudio = () => {
-            if (this.audio) {
-                this.audio.volume = 0.17;
-                this.audio.play();
+        const startAudioOnClick = () => {
+            if (!this.isAudioPlaying && this.scWidget) {
+                console.log('Starting SoundCloud We Belong Together on user interaction...');
+                this.scWidget.setVolume(17);
+                this.scWidget.play();
                 this.isAudioPlaying = true;
-                document.removeEventListener('click', startAudio);
-                
-                // Show confirmation
-                const msg = document.createElement('div');
-                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#000;color:#FFD700;padding:10px 20px;border-radius:10px;z-index:9999;font-size:1.2em;';
-                msg.textContent = '🎵 AUDIO STARTED! Background music playing at 17%';
-                document.body.appendChild(msg);
-                setTimeout(() => msg.remove(), 2000);
-                console.log('✅ AUDIO STARTED by user click!');
+                document.removeEventListener('click', startAudioOnClick);
             }
         };
-        document.addEventListener('click', startAudio);
+        document.addEventListener('click', startAudioOnClick);
+        console.log('Page click listener added - SoundCloud audio will start on user click');
     }
     
     addAutoStartListener() {
@@ -89,7 +83,7 @@ class CinematicWebsite {
     }
     
     setupAudio() {
-        this.audio = document.getElementById('background-audio');
+        this.soundcloudPlayer = document.getElementById('soundcloud-player');
         
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
@@ -101,13 +95,28 @@ class CinematicWebsite {
             };
         }
         
-        if (this.audio) {
-            this.audio.volume = 0.17;
-            this.audio.play().then(() => {
-                console.log('✅ AUDIO WORKING! Background music at 17%');
+        // Initialize SoundCloud Widget API exactly as it was working before
+        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+            this.scWidget = SC.Widget(this.soundcloudPlayer);
+            
+            this.scWidget.bind(SC.Widget.Events.READY, () => {
+                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
+                this.scWidget.setVolume(17);
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
                 this.isAudioPlaying = true;
-            }).catch(() => {
-                console.log('🎵 Will start on user click');
+                console.log('SoundCloud auto-started with looping enabled');
+            });
+            
+            // Enable looping when track finishes
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('Track finished - restarting for loop');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                this.scWidget.setVolume(17);
             });
         }
     }
@@ -810,11 +819,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions for "Begin Your Journey" button compatibility
 function enableAudio() {
-    if (window.cinematicWebsite && window.cinematicWebsite.audio) {
-        window.cinematicWebsite.audio.volume = 0.17;
-        window.cinematicWebsite.audio.play();
+    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
+        window.cinematicWebsite.scWidget.setVolume(17);
+        window.cinematicWebsite.scWidget.play();
         window.cinematicWebsite.isAudioPlaying = true;
-        console.log('🎵 Background music enabled at 17%');
+        console.log('SoundCloud We Belong Together enabled by user interaction');
     }
 }
 
