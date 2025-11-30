@@ -61,30 +61,49 @@ class CinematicWebsite {
             };
         }
         
-        // Initialize SoundCloud Widget API exactly as it was working before
-        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-            this.scWidget = SC.Widget(this.soundcloudPlayer);
-            
-            this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
-            });
-            
-            // Enable looping when track finishes
-            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - restarting for loop');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-            });
-            
-            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                this.scWidget.setVolume(17);
-            });
-        }
+        // Initialize SoundCloud with aggressive retry
+        this.initSoundCloudWidget();
+    }
+    
+    initSoundCloudWidget() {
+        console.log('Initializing SoundCloud Widget API for We Belong Together...');
+        
+        const initWidget = () => {
+            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+                this.scWidget = SC.Widget(this.soundcloudPlayer);
+                
+                this.scWidget.bind(SC.Widget.Events.READY, () => {
+                    console.log('🎵 SoundCloud READY - We Belong Together at 17% volume');
+                    this.scWidget.setVolume(17);
+                    this.scWidget.play();
+                    this.isAudioPlaying = true;
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                    console.log('Track finished - looping We Belong Together');
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                });
+                
+                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                    this.scWidget.setVolume(17);
+                    console.log('🎵 We Belong Together playing at 17%');
+                });
+                
+                return true;
+            }
+            return false;
+        };
+        
+        // Aggressive retry every 500ms
+        const retryInit = () => {
+            if (!initWidget()) {
+                console.log('SoundCloud not ready, retrying...');
+                setTimeout(retryInit, 500);
+            }
+        };
+        
+        retryInit()
     }
     
 
