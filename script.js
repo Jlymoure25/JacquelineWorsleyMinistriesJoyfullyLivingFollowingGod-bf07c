@@ -55,26 +55,23 @@ class CinematicWebsite {
     }
     
     addAutoStartListener() {
-        const startAudioOnClick = () => {
-            if (this.scWidget) {
-                console.log('🎵 USER CLICKED - FORCING We Belong Together to play!');
-                this.scWidget.setVolume(17);
-                this.scWidget.play();
+        const startAudio = () => {
+            if (this.audio) {
+                this.audio.volume = 0.17;
+                this.audio.play();
                 this.isAudioPlaying = true;
-                document.removeEventListener('click', startAudioOnClick);
-                console.log('✅ AUDIO FORCED ON! We Belong Together playing at 17%');
+                document.removeEventListener('click', startAudio);
                 
-                // Show visible confirmation
+                // Show confirmation
                 const msg = document.createElement('div');
                 msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#000;color:#FFD700;padding:10px 20px;border-radius:10px;z-index:9999;font-size:1.2em;';
-                msg.textContent = '🎵 Audio Started - We Belong Together Playing!';
+                msg.textContent = '🎵 AUDIO STARTED! Background music playing at 17%';
                 document.body.appendChild(msg);
-                setTimeout(() => msg.remove(), 3000);
+                setTimeout(() => msg.remove(), 2000);
+                console.log('✅ AUDIO STARTED by user click!');
             }
         };
-        document.addEventListener('click', startAudioOnClick);
-        document.addEventListener('touchstart', startAudioOnClick);
-        console.log('🎵 AGGRESSIVE click/touch listeners added - audio WILL start!');
+        document.addEventListener('click', startAudio);
     }
     
     addAutoStartListener() {
@@ -92,7 +89,7 @@ class CinematicWebsite {
     }
     
     setupAudio() {
-        this.soundcloudPlayer = document.getElementById('soundcloud-player');
+        this.audio = document.getElementById('background-audio');
         
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
@@ -104,8 +101,15 @@ class CinematicWebsite {
             };
         }
         
-        // Initialize SoundCloud with aggressive retry
-        this.initSoundCloudWidget();
+        if (this.audio) {
+            this.audio.volume = 0.17;
+            this.audio.play().then(() => {
+                console.log('✅ AUDIO WORKING! Background music at 17%');
+                this.isAudioPlaying = true;
+            }).catch(() => {
+                console.log('🎵 Will start on user click');
+            });
+        }
     }
     
     initSoundCloudWidget() {
@@ -806,11 +810,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions for "Begin Your Journey" button compatibility
 function enableAudio() {
-    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
-        window.cinematicWebsite.scWidget.setVolume(17);
-        window.cinematicWebsite.scWidget.play();
+    if (window.cinematicWebsite && window.cinematicWebsite.audio) {
+        window.cinematicWebsite.audio.volume = 0.17;
+        window.cinematicWebsite.audio.play();
         window.cinematicWebsite.isAudioPlaying = true;
-        console.log('SoundCloud We Belong Together enabled by user interaction');
+        console.log('🎵 Background music enabled at 17%');
     }
 }
 
