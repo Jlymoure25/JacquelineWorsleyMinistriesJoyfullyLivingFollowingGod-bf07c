@@ -68,17 +68,10 @@ class CinematicWebsite {
         // Add emergency fallback click listener with visual feedback
         const emergencyStart = () => {
             if (this.scWidget) {
-                console.log('🎵 EMERGENCY START - User clicked!');
+                console.log('🎵 EMERGENCY START - We Belong Together starting on user click!');
                 this.scWidget.setVolume(17);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
-                
-                // Show visual confirmation
-                const msg = document.createElement('div');
-                msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;color:#FFD700;padding:20px;border-radius:10px;z-index:9999;font-size:1.5em;border:3px solid #FFD700;';
-                msg.innerHTML = '🎵 AUDIO STARTED!<br>SoundCloud Player Active';
-                document.body.appendChild(msg);
-                setTimeout(() => msg.remove(), 3000);
                 
                 window.removeEventListener('click', emergencyStart);
             }
@@ -142,7 +135,7 @@ class CinematicWebsite {
                         this.scWidget.setVolume(17);
                         this.scWidget.play();
                         this.isAudioPlaying = true;
-                        console.log('✅ PLAY COMMAND SENT - Check if audio is playing');
+                        console.log('✅ We Belong Together - PLAY COMMAND SENT');
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.LOAD_PROGRESS, (data) => {
@@ -157,14 +150,7 @@ class CinematicWebsite {
                     
                     this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                         this.scWidget.setVolume(17);
-                        console.log('✅ AUDIO IS PLAYING! Volume set to 17%');
-                        
-                        // Show success message
-                        const success = document.createElement('div');
-                        success.style.cssText = 'position:fixed;bottom:20px;left:20px;background:#2E8B57;color:white;padding:10px;border-radius:5px;z-index:1001;';
-                        success.textContent = '✅ SoundCloud Playing at 17%';
-                        document.body.appendChild(success);
-                        setTimeout(() => success.remove(), 5000);
+                        console.log('✅ We Belong Together IS PLAYING! Volume set to 17%');
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
@@ -173,13 +159,6 @@ class CinematicWebsite {
                     
                     this.scWidget.bind(SC.Widget.Events.ERROR, (err) => {
                         console.log('❌ SoundCloud error:', err);
-                        
-                        // Show error message
-                        const error = document.createElement('div');
-                        error.style.cssText = 'position:fixed;bottom:20px;left:20px;background:#DC143C;color:white;padding:10px;border-radius:5px;z-index:1001;';
-                        error.textContent = '❌ SoundCloud Error: ' + JSON.stringify(err);
-                        document.body.appendChild(error);
-                        setTimeout(() => error.remove(), 10000);
                     });
                     
                     return true;
