@@ -65,18 +65,20 @@ class CinematicWebsite {
             console.log('SoundCloud API already available');
         }
         
-        // Add emergency fallback click listener with visual feedback
-        const emergencyStart = () => {
+        // Initialize widget
+        initWidget();
+        
+        // Emergency fallback for user interaction
+        const emergencyPlay = () => {
             if (this.scWidget) {
-                console.log('🎵 EMERGENCY START - We Belong Together starting on user click!');
+                console.log('🔧 Emergency play: We Belong Together starting on user click');
                 this.scWidget.setVolume(17);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
-                
-                window.removeEventListener('click', emergencyStart);
+                window.removeEventListener('click', emergencyPlay);
             }
         };
-        window.addEventListener('click', emergencyStart);
+        window.addEventListener('click', emergencyPlay);
     }
     
     addAutoStartListener() {
@@ -111,133 +113,81 @@ class CinematicWebsite {
     }
     
     initializeSoundCloud() {
-        console.log('Initializing SoundCloud Widget API...');
-        
-        const tryInit = () => {
-            if (typeof SC !== 'undefined' && SC.Widget) {
-                const iframe = document.getElementById('soundcloud-player');
-                if (iframe) {
-                    console.log('SoundCloud API and iframe found - creating widget');
-                    console.log('Iframe src:', iframe.src);
-                    this.scWidget = SC.Widget(iframe);
-                    console.log('Widget created:', this.scWidget);
-                    
-                    this.scWidget.bind(SC.Widget.Events.READY, () => {
-                        console.log('🎵 We Belong Together READY - FORCING PLAY');
-                        
-                        // Aggressive play attempts
-                        setTimeout(() => {
-                            this.scWidget.setVolume(17);
-                            this.scWidget.play();
-                        }, 100);
-                        
-                        setTimeout(() => {
-                            this.scWidget.play();
-                            this.isAudioPlaying = true;
-                        }, 500);
-                        
-                        setTimeout(() => {
-                            this.scWidget.play();
-                        }, 1000);
-                    });
-                    
-                    this.scWidget.bind(SC.Widget.Events.LOAD_PROGRESS, (data) => {
-                        console.log('💾 Loading progress:', data);
-                    });
-                    
-                    this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                        console.log('🔄 Track finished - restarting');
-                        this.scWidget.seekTo(0);
-                        this.scWidget.play();
-                    });
-                    
-                    this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                        this.scWidget.setVolume(17);
-                        console.log('✅ We Belong Together IS PLAYING! Volume set to 17%');
-                    });
-                    
-                    this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-                        console.log('⏸️ Audio paused');
-                    });
-                    
-                    this.scWidget.bind(SC.Widget.Events.ERROR, (err) => {
-                        console.log('❌ SoundCloud error:', err);
-                    });
-                    
-                    return true;
-                }
-            }
-            return false;
-        };
-        
-        // Try immediately
-        if (!tryInit()) {
-            console.log('SoundCloud not ready, retrying every 500ms...');
-            const retryInterval = setInterval(() => {
-                if (tryInit()) {
-                    clearInterval(retryInterval);
-                    console.log('✅ SoundCloud Widget API initialized successfully');
-                }
-            }, 500);
-        }
-    }
-    
-    initSoundCloudWidget() {
-        console.log('Initializing SoundCloud Widget API for We Belong Together...');
+        console.log('🎵 Initializing We Belong Together (Track ID: 302259354)');
         
         const initWidget = () => {
-            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                this.scWidget = SC.Widget(this.soundcloudPlayer);
+            if (typeof SC === 'undefined' || !SC.Widget) {
+                console.log('SoundCloud API not ready, retrying...');
+                setTimeout(initWidget, 500);
+                return;
+            }
+            
+            const iframe = document.getElementById('soundcloud-player');
+            if (!iframe) {
+                console.error('SoundCloud iframe not found');
+                return;
+            }
+            
+            this.scWidget = SC.Widget(iframe);
+            console.log('SoundCloud Widget created for We Belong Together');
+            
+            this.scWidget.bind(SC.Widget.Events.READY, () => {
+                console.log('🎵 We Belong Together READY - Starting playback');
                 
-                this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('🎵 SoundCloud READY - FORCING We Belong Together to play NOW');
-                    this.scWidget.setVolume(17);
-                    
-                    // Multiple attempts to ensure playback
-                    setTimeout(() => {
-                        this.scWidget.play();
-                        console.log('🎵 PLAY ATTEMPT 1');
-                    }, 100);
-                    
-                    setTimeout(() => {
+                // Get track info to confirm
+                this.scWidget.getCurrentSound((sound) => {
+                    if (sound) {
+                        console.log(`Track confirmed: "${sound.title}" by ${sound.user.username}`);
+                        
+                        // Set volume and play
+                        this.scWidget.setVolume(17);
                         this.scWidget.play();
                         this.isAudioPlaying = true;
-                        console.log('✅ PLAY ATTEMPT 2 - We Belong Together should be playing at 17%');
-                    }, 1000);
-                    
-                    setTimeout(() => {
-                        this.scWidget.play();
-                        console.log('🎵 PLAY ATTEMPT 3 - Final force');
-                    }, 2000);
+                        
+                        console.log('✅ We Belong Together playback initiated at 17% volume');
+                    } else {
+                        console.error('❌ Track not accessible');
+                    }
                 });
-                
-                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('Track finished - looping We Belong Together');
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                    this.scWidget.setVolume(17);
-                    console.log('🎵 We Belong Together playing at 17%');
-                });
-                
-                return true;
-            }
-            return false;
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                console.log('✅ We Belong Together IS PLAYING!');
+                this.scWidget.setVolume(17);
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                console.log('⏸️ Audio paused');
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('🔄 Track finished - restarting We Belong Together');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.ERROR, (err) => {
+                console.error('❌ SoundCloud error:', err);
+            });
         };
         
-        // Aggressive retry every 500ms
-        const retryInit = () => {
-            if (!initWidget()) {
-                console.log('SoundCloud not ready, retrying...');
-                setTimeout(retryInit, 500);
+        // Initialize widget
+        initWidget();
+        
+        // Emergency fallback for user interaction
+        const emergencyPlay = () => {
+            if (this.scWidget) {
+                console.log('🔧 Emergency play: We Belong Together starting on user click');
+                this.scWidget.setVolume(17);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                window.removeEventListener('click', emergencyPlay);
             }
         };
-        
-        retryInit()
+        window.addEventListener('click', emergencyPlay);
     }
     
+
 
 
     playIntroductionSequence() {

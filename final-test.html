@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test We Belong Together - Final Configuration</title>
+</head>
+<body>
+    <h1>Testing Final Configuration</h1>
+    <div id="status">Initializing...</div>
+    
+    <!-- Hidden audio player with correct track ID -->
+    <div id="audio-container" style="position: fixed; bottom: -200px; right: -400px; opacity: 0; pointer-events: none;">
+        <iframe id="soundcloud-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/302259354&auto_play=true&enable_api=true"></iframe>
+    </div>
+    
+    <script src="https://w.soundcloud.com/player/api.js"></script>
+    <script>
+        const status = document.getElementById('status');
+        let scWidget;
+        let testResults = [];
+        
+        function log(message) {
+            console.log(message);
+            testResults.push(new Date().toLocaleTimeString() + ': ' + message);
+            status.innerHTML = testResults.slice(-10).join('<br>');
+        }
+        
+        function initializeSoundCloud() {
+            log('🎵 Initializing We Belong Together (Track ID: 302259354)');
+            
+            const initWidget = () => {
+                if (typeof SC === 'undefined' || !SC.Widget) {
+                    log('SoundCloud API not ready, retrying...');
+                    setTimeout(initWidget, 500);
+                    return;
+                }
+                
+                const iframe = document.getElementById('soundcloud-player');
+                if (!iframe) {
+                    log('❌ SoundCloud iframe not found');
+                    return;
+                }
+                
+                scWidget = SC.Widget(iframe);
+                log('SoundCloud Widget created for We Belong Together');
+                
+                scWidget.bind(SC.Widget.Events.READY, () => {
+                    log('🎵 We Belong Together READY - Starting playback');
+                    
+                    // Get track info to confirm
+                    scWidget.getCurrentSound((sound) => {
+                        if (sound) {
+                            log(`Track confirmed: "${sound.title}" by ${sound.user.username}`);
+                            
+                            // Set volume and play
+                            scWidget.setVolume(17);
+                            scWidget.play();
+                            
+                            log('✅ We Belong Together playback initiated at 17% volume');
+                        } else {
+                            log('❌ Track not accessible');
+                        }
+                    });
+                });
+                
+                scWidget.bind(SC.Widget.Events.PLAY, () => {
+                    log('✅ CONFIRMED: We Belong Together IS PLAYING!');
+                    scWidget.setVolume(17);
+                });
+                
+                scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                    log('⏸️ Audio paused');
+                });
+                
+                scWidget.bind(SC.Widget.Events.FINISH, () => {
+                    log('🔄 Track finished - restarting We Belong Together');
+                    scWidget.seekTo(0);
+                    scWidget.play();
+                });
+                
+                scWidget.bind(SC.Widget.Events.ERROR, (err) => {
+                    log('❌ SoundCloud error: ' + JSON.stringify(err));
+                });
+            };
+            
+            // Initialize widget
+            initWidget();
+            
+            // Emergency fallback for user interaction
+            const emergencyPlay = () => {
+                if (scWidget) {
+                    log('🔧 Emergency play: We Belong Together starting on user click');
+                    scWidget.setVolume(17);
+                    scWidget.play();
+                    window.removeEventListener('click', emergencyPlay);
+                }
+            };
+            window.addEventListener('click', emergencyPlay);
+        }
+        
+        // Start when page loads
+        window.addEventListener('load', () => {
+            setTimeout(initializeSoundCloud, 1000);
+        });
+    </script>
+</body>
+</html>
