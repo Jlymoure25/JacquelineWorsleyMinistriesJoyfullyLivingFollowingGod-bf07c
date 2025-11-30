@@ -46,35 +46,36 @@ class CinematicWebsite {
     }
     
     setupAudio() {
-        this.soundcloudPlayer = document.getElementById('soundcloud-player');
-        
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
             speechSynthesis.getVoices();
             window.speechSynthesis.onvoiceschanged = () => {
                 console.log('Speech synthesis voices loaded');
-                // Reset narrator voice to ensure consistency
                 this.narratorVoice = null;
                 this.getNarratorVoice();
             };
         }
         
-        // Initialize SoundCloud Widget API exactly as it was working before
-        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-            this.scWidget = SC.Widget(this.soundcloudPlayer);
+        // Initialize SoundCloud after page load
+        setTimeout(() => {
+            this.initSoundCloud();
+        }, 1000);
+    }
+    
+    initSoundCloud() {
+        const iframe = document.getElementById('soundcloud-player');
+        if (iframe && typeof SC !== 'undefined') {
+            this.scWidget = SC.Widget(iframe);
             
             this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
+                console.log('SoundCloud ready - starting We Belong Together at 17% volume');
                 this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
             });
             
-            // Enable looping when track finishes
             this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - restarting for loop');
+                console.log('Track finished - looping');
                 this.scWidget.seekTo(0);
                 this.scWidget.play();
             });
@@ -82,6 +83,9 @@ class CinematicWebsite {
             this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                 this.scWidget.setVolume(17);
             });
+        } else {
+            console.log('Retrying SoundCloud init...');
+            setTimeout(() => this.initSoundCloud(), 2000);
         }
     }
 
