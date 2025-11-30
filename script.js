@@ -45,7 +45,25 @@ class CinematicWebsite {
         // Add page-wide click listener to start audio
         this.addAutoStartListener();
         
+        // Ensure SoundCloud API is loaded
+        this.ensureSoundCloudAPI();
+        
         console.log('Jacqueline Worsley Ministries website initialized with SoundCloud API');
+    }
+    
+    ensureSoundCloudAPI() {
+        if (typeof SC === 'undefined') {
+            console.log('Loading SoundCloud API...');
+            const script = document.createElement('script');
+            script.src = 'https://w.soundcloud.com/player/api.js';
+            script.onload = () => {
+                console.log('SoundCloud API loaded');
+                this.initializeSoundCloud();
+            };
+            document.head.appendChild(script);
+        } else {
+            console.log('SoundCloud API already available');
+        }
     }
     
     addAutoStartListener() {
@@ -75,29 +93,59 @@ class CinematicWebsite {
             };
         }
         
-        // Initialize SoundCloud Widget API exactly as it was working before
-        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-            this.scWidget = SC.Widget(this.soundcloudPlayer);
-            
-            this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
-                this.scWidget.setVolume(17);
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                console.log('SoundCloud auto-started with looping enabled');
-            });
-            
-            // Enable looping when track finishes
-            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - restarting for loop');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-            });
-            
-            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                this.scWidget.setVolume(17);
-            });
+        // Initialize SoundCloud Widget API with retry logic
+        this.initializeSoundCloud();
+    }
+    
+    initializeSoundCloud() {
+        console.log('Initializing SoundCloud Widget API...');
+        
+        const tryInit = () => {
+            if (typeof SC !== 'undefined' && SC.Widget) {
+                const iframe = document.getElementById('soundcloud-player');
+                if (iframe) {
+                    console.log('SoundCloud API and iframe found - creating widget');
+                    this.scWidget = SC.Widget(iframe);
+                    
+                    this.scWidget.bind(SC.Widget.Events.READY, () => {
+                        console.log('🎵 SoundCloud READY - Starting We Belong Together automatically');
+                        this.scWidget.setVolume(17);
+                        this.scWidget.seekTo(0);
+                        this.scWidget.play();
+                        this.isAudioPlaying = true;
+                        console.log('✅ We Belong Together auto-started at 17% volume');
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                        console.log('🔄 Track finished - restarting We Belong Together');
+                        this.scWidget.seekTo(0);
+                        this.scWidget.play();
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                        this.scWidget.setVolume(17);
+                        console.log('🎵 We Belong Together playing at 17%');
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.ERROR, (err) => {
+                        console.log('❌ SoundCloud error:', err);
+                    });
+                    
+                    return true;
+                }
+            }
+            return false;
+        };
+        
+        // Try immediately
+        if (!tryInit()) {
+            console.log('SoundCloud not ready, retrying every 500ms...');
+            const retryInterval = setInterval(() => {
+                if (tryInit()) {
+                    clearInterval(retryInterval);
+                    console.log('✅ SoundCloud Widget API initialized successfully');
+                }
+            }, 500);
         }
     }
     
