@@ -45,7 +45,42 @@ class CinematicWebsite {
             this.forceStartAudio();
         }, 2000);
         
-        console.log('Jacqueline Worsley Ministries website initialized with immediate auto-start');
+        // Add page-wide click listener to start audio
+        this.addAutoStartListener();
+        
+        // Add page-wide click listener to guarantee audio starts
+        this.addAutoStartListener();
+        
+        console.log('Jacqueline Worsley Ministries website initialized with auto-start on any click');
+    }
+    
+    addAutoStartListener() {
+        const startAudioOnClick = () => {
+            if (!this.isAudioPlaying && this.scWidget) {
+                console.log('🎵 STARTING We Belong Together on user click...');
+                this.scWidget.setVolume(17);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                document.removeEventListener('click', startAudioOnClick);
+                console.log('✅ AUDIO STARTED! We Belong Together playing at 17%');
+            }
+        };
+        document.addEventListener('click', startAudioOnClick);
+        console.log('🎵 Page click listener added - audio will start on ANY click');
+    }
+    
+    addAutoStartListener() {
+        const startAudioOnAnyClick = () => {
+            if (!this.isAudioPlaying && this.scWidget) {
+                console.log('🎵 Starting We Belong Together on user interaction...');
+                this.scWidget.setVolume(17);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                // Remove listener after first successful start
+                document.removeEventListener('click', startAudioOnAnyClick);
+            }
+        };
+        document.addEventListener('click', startAudioOnAnyClick);
     }
     
     setupAudio() {
@@ -73,10 +108,14 @@ class CinematicWebsite {
                 this.scWidget = SC.Widget(this.soundcloudPlayer);
                 
                 this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('🎵 SoundCloud READY - We Belong Together at 17% volume');
+                    console.log('🎵 SoundCloud READY - ATTEMPTING auto-start We Belong Together');
                     this.scWidget.setVolume(17);
-                    this.scWidget.play();
-                    this.isAudioPlaying = true;
+                    this.scWidget.play().then(() => {
+                        this.isAudioPlaying = true;
+                        console.log('✅ AUTO-START SUCCESS! We Belong Together playing at 17%');
+                    }).catch(err => {
+                        console.log('❌ Auto-start blocked by browser - will start on user click');
+                    });
                 });
                 
                 this.scWidget.bind(SC.Widget.Events.FINISH, () => {
