@@ -46,6 +46,9 @@ class CinematicWebsite {
     }
     
     setupAudio() {
+        // Get HTML5 audio element
+        this.audio = document.getElementById('background-audio');
+        
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
             speechSynthesis.getVoices();
@@ -56,36 +59,18 @@ class CinematicWebsite {
             };
         }
         
-        // Initialize SoundCloud after page load
-        setTimeout(() => {
-            this.initSoundCloud();
-        }, 1000);
-    }
-    
-    initSoundCloud() {
-        const iframe = document.getElementById('soundcloud-player');
-        if (iframe && typeof SC !== 'undefined') {
-            this.scWidget = SC.Widget(iframe);
+        if (this.audio) {
+            this.audio.volume = 0.17; // Set to 17% volume
+            this.audio.loop = true;
             
-            this.scWidget.bind(SC.Widget.Events.READY, () => {
-                console.log('SoundCloud ready - starting We Belong Together at 17% volume');
-                this.scWidget.setVolume(17);
-                this.scWidget.play();
+            // Try to start audio immediately
+            this.audio.play().then(() => {
+                console.log('Background music started successfully at 17% volume');
                 this.isAudioPlaying = true;
+            }).catch(err => {
+                console.log('Auto-play blocked, will start on user interaction:', err);
+                this.isAudioPlaying = false;
             });
-            
-            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('Track finished - looping');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
-            });
-            
-            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                this.scWidget.setVolume(17);
-            });
-        } else {
-            console.log('Retrying SoundCloud init...');
-            setTimeout(() => this.initSoundCloud(), 2000);
         }
     }
 
@@ -245,62 +230,18 @@ class CinematicWebsite {
         return this.narratorVoice;
     }
 
-    initializeSoundCloudWidget() {
-        console.log('Initializing SoundCloud Widget API controls...');
-        
-        const attemptInit = () => {
-            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                console.log('SoundCloud API available - creating widget with full controls');
-                this.scWidget = SC.Widget(this.soundcloudPlayer);
-                
-                this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget API READY - We Belong Together with 17% volume');
-                    this.scWidget.setVolume(17);
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                    this.isAudioPlaying = true;
-                    console.log('SoundCloud auto-started with API controls');
-                });
-                
-                // Enable looping when track finishes
-                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('We Belong Together finished - restarting for loop');
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                    this.scWidget.setVolume(17);
-                    console.log('SoundCloud playing We Belong Together at 17% volume');
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-                    console.log('SoundCloud paused - restarting automatically');
-                    setTimeout(() => this.scWidget.play(), 100);
-                });
-                
-                return true;
-            } else {
-                console.log('SoundCloud API not ready yet - waiting...');
-                return false;
-            }
-        };
-        
-        // Try immediately
-        if (!attemptInit()) {
-            // Retry every 500ms until the API is ready
-            const retryInterval = setInterval(() => {
-                if (attemptInit()) {
-                    clearInterval(retryInterval);
-                    console.log('SoundCloud Widget API controls initialized successfully');
-                }
-            }, 500);
-        }
-    }
+
 
     startBackgroundMusic() {
-        console.log('Background music started via SoundCloud');
-        // Music is handled by SoundCloud widget
+        if (this.audio && !this.isAudioPlaying) {
+            this.audio.volume = 0.17;
+            this.audio.play().then(() => {
+                console.log('Background music started at 17% volume');
+                this.isAudioPlaying = true;
+            }).catch(err => {
+                console.log('Could not start audio:', err);
+            });
+        }
     }
 
     // SoundCloud initialization moved to setupAudio()
@@ -766,6 +707,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Global functions for "Begin Your Journey" button compatibility
+function enableAudio() {
+    if (window.cinematicWebsite && window.cinematicWebsite.audio) {
+        window.cinematicWebsite.audio.volume = 0.17;
+        window.cinematicWebsite.audio.play().then(() => {
+            console.log('Audio enabled by user interaction');
+            window.cinematicWebsite.isAudioPlaying = true;
+            window.cinematicWebsite.startBackgroundMusic();
+        }).catch(err => {
+            console.log('Audio enable failed:', err);
+        });
+    }
+}
+
 function startJourney() {
     if (window.cinematicWebsite) {
         window.cinematicWebsite.nextSection();
