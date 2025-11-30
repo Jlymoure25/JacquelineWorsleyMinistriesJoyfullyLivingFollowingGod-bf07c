@@ -25,7 +25,7 @@ class CinematicWebsite {
         this.sections = document.querySelectorAll('.section');
         this.totalSections = this.sections.length;
         
-        // Setup audio with original working method
+        // Setup audio with immediate auto-start
         this.setupAudio();
         
         // Setup navigation
@@ -40,9 +40,12 @@ class CinematicWebsite {
         // Start SoundCloud and narrator voice together - IMMEDIATE auto-start
         this.playIntroductionSequence();
         
-        // SoundCloud already initialized in setupAudio()
+        // Force audio start after short delay to ensure SoundCloud is ready
+        setTimeout(() => {
+            this.forceStartAudio();
+        }, 2000);
         
-        console.log('Jacqueline Worsley Ministries website initialized with synchronized auto-start');
+        console.log('Jacqueline Worsley Ministries website initialized with immediate auto-start');
     }
     
     setupAudio() {
@@ -63,25 +66,31 @@ class CinematicWebsite {
     }
     
     initializeSoundCloudWidget() {
-        console.log('Initializing SoundCloud Widget API for We Belong Together...');
+        console.log('Initializing SoundCloud Widget API for immediate We Belong Together start...');
         
         const attemptInit = () => {
             if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                console.log('SoundCloud API available - creating widget with full controls');
+                console.log('SoundCloud API available - creating widget with immediate auto-start');
                 this.scWidget = SC.Widget(this.soundcloudPlayer);
                 
                 this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget API READY - We Belong Together with 17% volume');
+                    console.log('SoundCloud Widget READY - IMMEDIATE START We Belong Together at 17%');
                     this.scWidget.setVolume(17);
                     this.scWidget.seekTo(0);
                     this.scWidget.play();
                     this.isAudioPlaying = true;
-                    console.log('SoundCloud auto-started with API controls');
+                    console.log('SoundCloud IMMEDIATELY auto-started');
+                    
+                    // Double-check it's playing after 1 second
+                    setTimeout(() => {
+                        this.scWidget.play();
+                        this.scWidget.setVolume(17);
+                    }, 1000);
                 });
                 
-                // Enable looping when track finishes
+                // Enable aggressive looping when track finishes
                 this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('We Belong Together finished - restarting for loop');
+                    console.log('We Belong Together finished - IMMEDIATE restart for loop');
                     this.scWidget.seekTo(0);
                     this.scWidget.play();
                 });
@@ -91,22 +100,27 @@ class CinematicWebsite {
                     console.log('SoundCloud playing We Belong Together at 17% volume');
                 });
                 
+                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                    console.log('SoundCloud paused - IMMEDIATELY restarting');
+                    setTimeout(() => this.scWidget.play(), 100);
+                });
+                
                 return true;
             } else {
-                console.log('SoundCloud API not ready yet - waiting...');
+                console.log('SoundCloud API not ready yet - aggressive retry...');
                 return false;
             }
         };
         
         // Try immediately
         if (!attemptInit()) {
-            // Retry every 500ms until the API is ready
+            // More aggressive retry every 200ms
             const retryInterval = setInterval(() => {
                 if (attemptInit()) {
                     clearInterval(retryInterval);
-                    console.log('SoundCloud Widget API controls initialized successfully');
+                    console.log('SoundCloud Widget API initialized with immediate auto-start');
                 }
-            }, 500);
+            }, 200);
         }
     }
 
@@ -268,6 +282,19 @@ class CinematicWebsite {
 
 
 
+    forceStartAudio() {
+        console.log('Force starting SoundCloud We Belong Together audio...');
+        if (this.scWidget) {
+            this.scWidget.setVolume(17);
+            this.scWidget.play();
+            this.isAudioPlaying = true;
+            console.log('SoundCloud audio force started at 17% volume');
+        } else {
+            console.log('SoundCloud widget not ready, retrying...');
+            setTimeout(() => this.forceStartAudio(), 1000);
+        }
+    }
+    
     startBackgroundMusic() {
         console.log('Background music started via SoundCloud We Belong Together');
         // Music is handled by SoundCloud widget API
