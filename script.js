@@ -46,6 +46,8 @@ class CinematicWebsite {
     }
     
     setupAudio() {
+        this.soundcloudPlayer = document.getElementById('soundcloud-player');
+        
         // Initialize speech synthesis
         if ('speechSynthesis' in window) {
             speechSynthesis.getVoices();
@@ -57,9 +59,30 @@ class CinematicWebsite {
             };
         }
         
-        // Background audio is now handled directly in HTML
-        console.log('Audio setup complete - using Web Audio API');
-        this.isAudioPlaying = true;
+        // Initialize SoundCloud Widget API exactly as it was working before
+        if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
+            this.scWidget = SC.Widget(this.soundcloudPlayer);
+            
+            this.scWidget.bind(SC.Widget.Events.READY, () => {
+                console.log('SoundCloud Widget API ready - enforcing 17% volume with loop');
+                this.scWidget.setVolume(17);
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                console.log('SoundCloud auto-started with looping enabled');
+            });
+            
+            // Enable looping when track finishes
+            this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                console.log('Track finished - restarting for loop');
+                this.scWidget.seekTo(0);
+                this.scWidget.play();
+            });
+            
+            this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                this.scWidget.setVolume(17);
+            });
+        }
     }
 
     playIntroductionSequence() {
@@ -272,8 +295,8 @@ class CinematicWebsite {
     }
 
     startBackgroundMusic() {
-        console.log('Background music already playing via Web Audio API');
-        this.isAudioPlaying = true;
+        console.log('Background music started via SoundCloud');
+        // Music is handled by SoundCloud widget
     }
 
     // SoundCloud initialization moved to setupAudio()
@@ -732,25 +755,10 @@ class CinematicWebsite {
     }
 }
 
-// WORKING SOLUTION - Web Audio API + Narrator
+// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('GUARANTEED WORKING solution - Web Audio + Narrator');
-    
-    // Force speech synthesis ready
-    if ('speechSynthesis' in window) {
-        speechSynthesis.getVoices();
-    }
-    
-    // Create website 
+    console.log('DOM loaded - initializing Jacqueline Worsley Ministries website');
     window.cinematicWebsite = new CinematicWebsite();
-    
-    // Start narrator immediately - synchronized with Web Audio
-    setTimeout(() => {
-        if (window.cinematicWebsite) {
-            console.log('Starting narrator with background audio');
-            window.cinematicWebsite.startIntroductoryNarration();
-        }
-    }, 1000);
 });
 
 // Global functions for "Begin Your Journey" button compatibility
