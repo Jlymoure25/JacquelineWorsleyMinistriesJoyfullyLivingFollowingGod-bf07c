@@ -64,6 +64,18 @@ class CinematicWebsite {
         } else {
             console.log('SoundCloud API already available');
         }
+        
+        // Add emergency fallback click listener
+        const emergencyStart = () => {
+            if (this.scWidget && !this.isAudioPlaying) {
+                console.log('🎵 EMERGENCY START - User clicked, forcing We Belong Together!');
+                this.scWidget.setVolume(17);
+                this.scWidget.play();
+                this.isAudioPlaying = true;
+                window.removeEventListener('click', emergencyStart);
+            }
+        };
+        window.addEventListener('click', emergencyStart);
     }
     
     addAutoStartListener() {
@@ -108,12 +120,26 @@ class CinematicWebsite {
                     this.scWidget = SC.Widget(iframe);
                     
                     this.scWidget.bind(SC.Widget.Events.READY, () => {
-                        console.log('🎵 SoundCloud READY - Starting We Belong Together automatically');
-                        this.scWidget.setVolume(17);
-                        this.scWidget.seekTo(0);
-                        this.scWidget.play();
-                        this.isAudioPlaying = true;
-                        console.log('✅ We Belong Together auto-started at 17% volume');
+                        console.log('🎵 SoundCloud READY - FORCING We Belong Together to play NOW');
+                        
+                        // Multiple attempts to ensure playback
+                        setTimeout(() => {
+                            this.scWidget.setVolume(17);
+                            this.scWidget.seekTo(0);
+                            this.scWidget.play();
+                            console.log('🎵 Play attempt 1');
+                        }, 100);
+                        
+                        setTimeout(() => {
+                            this.scWidget.play();
+                            this.isAudioPlaying = true;
+                            console.log('✅ We Belong Together SHOULD BE PLAYING at 17%');
+                        }, 1000);
+                        
+                        setTimeout(() => {
+                            this.scWidget.play();
+                            console.log('🎵 Final play attempt');
+                        }, 2000);
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.FINISH, () => {
