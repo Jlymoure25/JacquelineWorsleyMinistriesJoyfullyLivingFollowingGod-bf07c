@@ -66,62 +66,40 @@ class CinematicWebsite {
     }
     
     initializeSoundCloudWidget() {
-        console.log('Initializing SoundCloud Widget API for immediate We Belong Together start...');
+        console.log('Initializing SoundCloud Widget API...');
         
-        const attemptInit = () => {
-            if (typeof SC !== 'undefined' && SC.Widget && this.soundcloudPlayer) {
-                console.log('SoundCloud API available - creating widget with immediate auto-start');
-                this.scWidget = SC.Widget(this.soundcloudPlayer);
-                
-                this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('SoundCloud Widget READY - IMMEDIATE START We Belong Together at 17%');
-                    this.scWidget.setVolume(17);
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                    this.isAudioPlaying = true;
-                    console.log('SoundCloud IMMEDIATELY auto-started');
+        // Wait for SoundCloud API to be available
+        const waitForSC = () => {
+            if (typeof SC !== 'undefined' && SC.Widget) {
+                console.log('SoundCloud API ready - initializing widget');
+                const iframe = document.getElementById('soundcloud-player');
+                if (iframe) {
+                    this.scWidget = SC.Widget(iframe);
                     
-                    // Double-check it's playing after 1 second
-                    setTimeout(() => {
-                        this.scWidget.play();
+                    this.scWidget.bind(SC.Widget.Events.READY, () => {
+                        console.log('SoundCloud Widget READY - starting We Belong Together at 17%');
                         this.scWidget.setVolume(17);
-                    }, 1000);
-                });
-                
-                // Enable aggressive looping when track finishes
-                this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                    console.log('We Belong Together finished - IMMEDIATE restart for loop');
-                    this.scWidget.seekTo(0);
-                    this.scWidget.play();
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PLAY, () => {
-                    this.scWidget.setVolume(17);
-                    console.log('SoundCloud playing We Belong Together at 17% volume');
-                });
-                
-                this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
-                    console.log('SoundCloud paused - IMMEDIATELY restarting');
-                    setTimeout(() => this.scWidget.play(), 100);
-                });
-                
-                return true;
+                        this.scWidget.play();
+                        this.isAudioPlaying = true;
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.FINISH, () => {
+                        console.log('Track finished - looping');
+                        this.scWidget.seekTo(0);
+                        this.scWidget.play();
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.PLAY, () => {
+                        this.scWidget.setVolume(17);
+                    });
+                }
             } else {
-                console.log('SoundCloud API not ready yet - aggressive retry...');
-                return false;
+                console.log('Waiting for SoundCloud API...');
+                setTimeout(waitForSC, 1000);
             }
         };
         
-        // Try immediately
-        if (!attemptInit()) {
-            // More aggressive retry every 200ms
-            const retryInterval = setInterval(() => {
-                if (attemptInit()) {
-                    clearInterval(retryInterval);
-                    console.log('SoundCloud Widget API initialized with immediate auto-start');
-                }
-            }, 200);
-        }
+        waitForSC();
     }
 
     playIntroductionSequence() {
