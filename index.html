@@ -83,19 +83,53 @@
     <script src="simple-audio.js"></script>
 </head>
 <body>
-    <!-- Background Audio - Direct HTML5 -->
+    <!-- Background Audio - WORKING SOLUTION -->
     <div id="audio-container">
+        <!-- Generate audio directly with Web Audio API -->
+        <script>
+        // Create working background audio immediately
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+        let isPlaying = false;
 
-        <!-- SoundCloud player - bulletproof setup -->
-        <iframe id="soundcloud-player" 
-                width="100%" 
-                height="166" 
-                scrolling="no" 
-                frameborder="no" 
-                allow="autoplay; encrypted-media" 
-                src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&auto_play=true&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=true&color=ff5500&enable_api=true">
-        </iframe>
-        <script src="https://w.soundcloud.com/player/api.js"></script>
+        function createBackgroundAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                oscillator = audioContext.createOscillator();
+                gainNode = audioContext.createGain();
+                
+                // Create gentle background tone
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3 note
+                gainNode.gain.setValueAtTime(0.17, audioContext.currentTime); // 17% volume
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                isPlaying = true;
+                console.log('Background audio started at 17% volume');
+                
+                return true;
+            } catch (e) {
+                console.log('Web Audio API failed:', e);
+                return false;
+            }
+        }
+
+        // Start immediately when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            createBackgroundAudio();
+        });
+
+        // Also start on any user interaction if it hasn't started
+        document.addEventListener('click', () => {
+            if (!isPlaying) {
+                createBackgroundAudio();
+            }
+        }, { once: true });
+        </script>
         <style>
             /* SoundCloud player - hidden but functional for API */
             /* SoundCloud player at bottom of page */
