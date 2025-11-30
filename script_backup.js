@@ -793,7 +793,7 @@ class CinematicWebsite {
         
         // Create black overlay for fade to black effect
         const blackOverlay = document.createElement('div');
-        blackOverlay.className = 'video-fade-to-black';
+        // blackOverlay.className = 'video-fade-to-black'; // Disabled overlay
         document.body.appendChild(blackOverlay);
         
         // Start fade to black after a brief delay
@@ -1495,7 +1495,7 @@ class CinematicWebsite {
             left: 50%;
             transform: translate(-50%, -50%);
             background: linear-gradient(45deg, var(--gold), var(--crimson));
-            color: white;
+            // color: white; // Disabled white color overlay
             padding: 2rem;
             border-radius: 20px;
             font-size: 1.5rem;

@@ -1,3 +1,68 @@
+/* Hide cream box code at top */
+.cream-box-code {
+    display: none !important;
+}
+
+/* Thank You popup styles */
+.thankyou-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--gold);
+    color: var(--dark-crimson);
+    padding: 2rem 3rem;
+    border-radius: 30px;
+    font-size: 2rem;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    opacity: 1;
+    transition: opacity 1s;
+}
+.thankyou-popup.fade-out {
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+/* Fade to black overlay */
+.video-fade-to-black {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    opacity: 0;
+    z-index: 9998;
+    pointer-events: none;
+    transition: opacity 2s;
+}
+.video-fade-to-black.active {
+    opacity: 1;
+    pointer-events: all;
+    transition: opacity 2s;
+}
+
+/* Experience Again page styles */
+.experience-again {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 2s;
+}
+.experience-again.fade-in {
+    opacity: 1;
+    transition: opacity 2s;
+}
 /* Jacqueline Worsley Ministries - Cinematic Website Styles */
 
 :root {
@@ -6,7 +71,7 @@
     --crimson: #DC143C;
     --dark-crimson: #8B0000;
     --cream: #FFF8DC;
-    --off-white: #FFFEF7;
+    /* --off-white: #FFFEF7; -- disabled for no white overlays */
     --black-overlay: rgba(0, 0, 0, 0.7);
     --gold-overlay: rgba(255, 215, 0, 0.1);
 }
@@ -21,7 +86,7 @@ html, body {
     height: 100%;
     overflow: hidden;
     font-family: 'Open Sans', sans-serif;
-    background: linear-gradient(135deg, var(--cream) 0%, var(--off-white) 50%, var(--gold) 100%);
+    background: linear-gradient(135deg, var(--cream) 0%, var(--gold) 100%); /* removed off-white */
     color: var(--dark-crimson);
 }
 
@@ -249,7 +314,7 @@ html, body {
     background: linear-gradient(
         45deg,
         var(--cream) 0%,
-        var(--off-white) 30%,
+        /* var(--off-white) 30%, -- removed for no white overlays */
         var(--gold) 70%,
         var(--dark-gold) 100%
     );

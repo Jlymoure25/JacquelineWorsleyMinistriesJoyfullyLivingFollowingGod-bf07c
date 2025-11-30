@@ -113,6 +113,25 @@ class CinematicWebsite {
     }
     
     initializeSoundCloud() {
+        // Helper to fade out SoundCloud audio
+        const fadeOutSoundCloud = (duration = 2000) => {
+            if (this.scWidget) {
+                let volume = 17;
+                const steps = 20;
+                const stepTime = duration / steps;
+                let currentStep = 0;
+                const fade = () => {
+                    volume -= 17 / steps;
+                    if (volume < 0) volume = 0;
+                    this.scWidget.setVolume(volume);
+                    currentStep++;
+                    if (currentStep < steps) {
+                        setTimeout(fade, stepTime);
+                    }
+                };
+                fade();
+            }
+        };
         console.log('🎵 Initializing We Belong Together (Track ID: 302259354)');
         
         const initWidget = () => {
@@ -161,10 +180,65 @@ class CinematicWebsite {
             });
             
             this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                console.log('🔄 Track finished - restarting We Belong Together');
-                this.scWidget.seekTo(0);
-                this.scWidget.play();
+                // Only loop if not at Thanksgiving slide
+                if (!this.isThanksgivingActive) {
+                    console.log('🔄 Track finished - restarting We Belong Together');
+                    this.scWidget.seekTo(0);
+                    this.scWidget.play();
+                }
             });
+                // Call this when Thanksgiving slide is shown
+                handleThanksgivingSequence() {
+                    this.isThanksgivingActive = true;
+                    // Show Thank You popup
+                    setTimeout(() => {
+                        this.showThankYouPopup();
+                    }, 500); // Show popup after slide appears
+                }
+
+                showThankYouPopup() {
+                    // Create and show popup
+                    const popup = document.createElement('div');
+                    popup.className = 'thankyou-popup';
+                    popup.innerHTML = '<div class="thankyou-message">Thank You For Joining Us. God Bless You.</div>';
+                    document.body.appendChild(popup);
+                    setTimeout(() => {
+                        popup.classList.add('fade-out');
+                        // Fade to black after 3 seconds
+                        setTimeout(() => {
+                            this.fadeToBlackAndAudio();
+                            popup.remove();
+                        }, 3000);
+                    }, 2000); // Show popup for 2 seconds
+                }
+
+                fadeToBlackAndAudio() {
+                    // Fade out audio
+                    fadeOutSoundCloud(2000);
+                    // Fade website to black
+                    const fadeDiv = document.createElement('div');
+                    fadeDiv.className = 'video-fade-to-black';
+                    document.body.appendChild(fadeDiv);
+                    setTimeout(() => {
+                        fadeDiv.classList.add('active');
+                        // After 2 seconds, fade in Experience Again page
+                        setTimeout(() => {
+                            this.showExperienceAgainPage();
+                            fadeDiv.remove();
+                        }, 2000);
+                    }, 100);
+                }
+
+                showExperienceAgainPage() {
+                    // Show next webpage with Experience Again button
+                    const expDiv = document.createElement('div');
+                    expDiv.className = 'experience-again';
+                    expDiv.innerHTML = '<button onclick="window.location.reload()">Experience Again</button>';
+                    document.body.appendChild(expDiv);
+                    setTimeout(() => {
+                        expDiv.classList.add('fade-in');
+                    }, 100);
+                }
             
             this.scWidget.bind(SC.Widget.Events.ERROR, (err) => {
                 console.error('❌ SoundCloud error:', err);
