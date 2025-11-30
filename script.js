@@ -108,11 +108,11 @@ class CinematicWebsite {
                 this.scWidget = SC.Widget(this.soundcloudPlayer);
                 
                 this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('🎵 SoundCloud READY - ATTEMPTING auto-start We Belong Together');
+                    console.log('🎵 SoundCloud READY - ATTEMPTING auto-start We Belong Together (Smooth Jazz All Stars)');
                     this.scWidget.setVolume(17);
                     this.scWidget.play().then(() => {
                         this.isAudioPlaying = true;
-                        console.log('✅ AUTO-START SUCCESS! We Belong Together playing at 17%');
+                        console.log('✅ AUTO-START SUCCESS! We Belong Together (Smooth Jazz All Stars) playing at 17%');
                     }).catch(err => {
                         console.log('❌ Auto-start blocked by browser - will start on user click');
                     });

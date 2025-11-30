@@ -84,9 +84,10 @@
 </head>
 <body>
     <!-- Background Audio -->
-    <audio id="background-music" loop style="display: none;">
-        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshRzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFJHfH8N2QQAoUXrTp66hVFApGn+DyvmshBzuU1/LNeSsFA=" type="audio/wav">
-    </audio>
+    <div id="audio-container">
+        <iframe id="soundcloud-player" width="1" height="1" style="position: fixed; bottom: 0; right: 0; opacity: 0.01;" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/smoothjazzallstars/we-belong-together-3&color=%23ff5500&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false&enable_api=true"></iframe>
+        <script src="https://w.soundcloud.com/player/api.js"></script>
+    </div>
         <style>
             /* SoundCloud player - hidden but functional for API */
             #soundcloud-player {
