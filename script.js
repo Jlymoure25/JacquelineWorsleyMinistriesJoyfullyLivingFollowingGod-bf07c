@@ -56,17 +56,25 @@ class CinematicWebsite {
     
     addAutoStartListener() {
         const startAudioOnClick = () => {
-            if (!this.isAudioPlaying && this.scWidget) {
-                console.log('🎵 STARTING We Belong Together on user click...');
+            if (this.scWidget) {
+                console.log('🎵 USER CLICKED - FORCING We Belong Together to play!');
                 this.scWidget.setVolume(17);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
                 document.removeEventListener('click', startAudioOnClick);
-                console.log('✅ AUDIO STARTED! We Belong Together playing at 17%');
+                console.log('✅ AUDIO FORCED ON! We Belong Together playing at 17%');
+                
+                // Show visible confirmation
+                const msg = document.createElement('div');
+                msg.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#000;color:#FFD700;padding:10px 20px;border-radius:10px;z-index:9999;font-size:1.2em;';
+                msg.textContent = '🎵 Audio Started - We Belong Together Playing!';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 3000);
             }
         };
         document.addEventListener('click', startAudioOnClick);
-        console.log('🎵 Page click listener added - audio will start on ANY click');
+        document.addEventListener('touchstart', startAudioOnClick);
+        console.log('🎵 AGGRESSIVE click/touch listeners added - audio WILL start!');
     }
     
     addAutoStartListener() {
@@ -108,14 +116,25 @@ class CinematicWebsite {
                 this.scWidget = SC.Widget(this.soundcloudPlayer);
                 
                 this.scWidget.bind(SC.Widget.Events.READY, () => {
-                    console.log('🎵 SoundCloud READY - ATTEMPTING auto-start We Belong Together (Smooth Jazz All Stars)');
+                    console.log('🎵 SoundCloud READY - FORCING We Belong Together to play NOW');
                     this.scWidget.setVolume(17);
-                    this.scWidget.play().then(() => {
+                    
+                    // Multiple attempts to ensure playback
+                    setTimeout(() => {
+                        this.scWidget.play();
+                        console.log('🎵 PLAY ATTEMPT 1');
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        this.scWidget.play();
                         this.isAudioPlaying = true;
-                        console.log('✅ AUTO-START SUCCESS! We Belong Together (Smooth Jazz All Stars) playing at 17%');
-                    }).catch(err => {
-                        console.log('❌ Auto-start blocked by browser - will start on user click');
-                    });
+                        console.log('✅ PLAY ATTEMPT 2 - We Belong Together should be playing at 17%');
+                    }, 1000);
+                    
+                    setTimeout(() => {
+                        this.scWidget.play();
+                        console.log('🎵 PLAY ATTEMPT 3 - Final force');
+                    }, 2000);
                 });
                 
                 this.scWidget.bind(SC.Widget.Events.FINISH, () => {
