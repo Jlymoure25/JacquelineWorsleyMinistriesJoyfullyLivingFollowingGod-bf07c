@@ -123,19 +123,22 @@ class CinematicWebsite {
                     console.log('Widget created:', this.scWidget);
                     
                     this.scWidget.bind(SC.Widget.Events.READY, () => {
-                        console.log('🎵 SoundCloud WIDGET READY!');
-                        console.log('Widget object:', this.scWidget);
+                        console.log('🎵 We Belong Together READY - FORCING PLAY');
                         
-                        // Get track info
-                        this.scWidget.getCurrentSound((sound) => {
-                            console.log('Current track:', sound);
-                        });
+                        // Aggressive play attempts
+                        setTimeout(() => {
+                            this.scWidget.setVolume(17);
+                            this.scWidget.play();
+                        }, 100);
                         
-                        // Set volume and play
-                        this.scWidget.setVolume(17);
-                        this.scWidget.play();
-                        this.isAudioPlaying = true;
-                        console.log('✅ We Belong Together - PLAY COMMAND SENT');
+                        setTimeout(() => {
+                            this.scWidget.play();
+                            this.isAudioPlaying = true;
+                        }, 500);
+                        
+                        setTimeout(() => {
+                            this.scWidget.play();
+                        }, 1000);
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.LOAD_PROGRESS, (data) => {
