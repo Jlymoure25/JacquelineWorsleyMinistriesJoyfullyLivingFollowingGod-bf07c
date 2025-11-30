@@ -65,13 +65,21 @@ class CinematicWebsite {
             console.log('SoundCloud API already available');
         }
         
-        // Add emergency fallback click listener
+        // Add emergency fallback click listener with visual feedback
         const emergencyStart = () => {
-            if (this.scWidget && !this.isAudioPlaying) {
-                console.log('🎵 EMERGENCY START - User clicked, forcing We Belong Together!');
+            if (this.scWidget) {
+                console.log('🎵 EMERGENCY START - User clicked!');
                 this.scWidget.setVolume(17);
                 this.scWidget.play();
                 this.isAudioPlaying = true;
+                
+                // Show visual confirmation
+                const msg = document.createElement('div');
+                msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#000;color:#FFD700;padding:20px;border-radius:10px;z-index:9999;font-size:1.5em;border:3px solid #FFD700;';
+                msg.innerHTML = '🎵 AUDIO STARTED!<br>SoundCloud Player Active';
+                document.body.appendChild(msg);
+                setTimeout(() => msg.remove(), 3000);
+                
                 window.removeEventListener('click', emergencyStart);
             }
         };
@@ -117,44 +125,61 @@ class CinematicWebsite {
                 const iframe = document.getElementById('soundcloud-player');
                 if (iframe) {
                     console.log('SoundCloud API and iframe found - creating widget');
+                    console.log('Iframe src:', iframe.src);
                     this.scWidget = SC.Widget(iframe);
+                    console.log('Widget created:', this.scWidget);
                     
                     this.scWidget.bind(SC.Widget.Events.READY, () => {
-                        console.log('🎵 SoundCloud READY - FORCING We Belong Together to play NOW');
+                        console.log('🎵 SoundCloud WIDGET READY!');
+                        console.log('Widget object:', this.scWidget);
                         
-                        // Multiple attempts to ensure playback
-                        setTimeout(() => {
-                            this.scWidget.setVolume(17);
-                            this.scWidget.seekTo(0);
-                            this.scWidget.play();
-                            console.log('🎵 Play attempt 1');
-                        }, 100);
+                        // Get track info
+                        this.scWidget.getCurrentSound((sound) => {
+                            console.log('Current track:', sound);
+                        });
                         
-                        setTimeout(() => {
-                            this.scWidget.play();
-                            this.isAudioPlaying = true;
-                            console.log('✅ We Belong Together SHOULD BE PLAYING at 17%');
-                        }, 1000);
-                        
-                        setTimeout(() => {
-                            this.scWidget.play();
-                            console.log('🎵 Final play attempt');
-                        }, 2000);
+                        // Set volume and play
+                        this.scWidget.setVolume(17);
+                        this.scWidget.play();
+                        this.isAudioPlaying = true;
+                        console.log('✅ PLAY COMMAND SENT - Check if audio is playing');
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.LOAD_PROGRESS, (data) => {
+                        console.log('💾 Loading progress:', data);
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.FINISH, () => {
-                        console.log('🔄 Track finished - restarting We Belong Together');
+                        console.log('🔄 Track finished - restarting');
                         this.scWidget.seekTo(0);
                         this.scWidget.play();
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.PLAY, () => {
                         this.scWidget.setVolume(17);
-                        console.log('🎵 We Belong Together playing at 17%');
+                        console.log('✅ AUDIO IS PLAYING! Volume set to 17%');
+                        
+                        // Show success message
+                        const success = document.createElement('div');
+                        success.style.cssText = 'position:fixed;bottom:20px;left:20px;background:#2E8B57;color:white;padding:10px;border-radius:5px;z-index:1001;';
+                        success.textContent = '✅ SoundCloud Playing at 17%';
+                        document.body.appendChild(success);
+                        setTimeout(() => success.remove(), 5000);
+                    });
+                    
+                    this.scWidget.bind(SC.Widget.Events.PAUSE, () => {
+                        console.log('⏸️ Audio paused');
                     });
                     
                     this.scWidget.bind(SC.Widget.Events.ERROR, (err) => {
                         console.log('❌ SoundCloud error:', err);
+                        
+                        // Show error message
+                        const error = document.createElement('div');
+                        error.style.cssText = 'position:fixed;bottom:20px;left:20px;background:#DC143C;color:white;padding:10px;border-radius:5px;z-index:1001;';
+                        error.textContent = '❌ SoundCloud Error: ' + JSON.stringify(err);
+                        document.body.appendChild(error);
+                        setTimeout(() => error.remove(), 10000);
                     });
                     
                     return true;
