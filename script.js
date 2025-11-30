@@ -61,16 +61,8 @@ class CinematicWebsite {
             };
         }
         
-        // Set up audio
-        if (this.audio) {
-            this.audio.volume = 0.17;
-            this.audio.play().then(() => {
-                console.log('Background music started at 17% volume');
-                this.isAudioPlaying = true;
-            }).catch(err => {
-                console.log('Auto-play blocked, will start on user interaction');
-            });
-        }
+        // Audio will start on user interaction
+        this.isAudioPlaying = false;
     }
     
 
@@ -723,11 +715,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions for "Begin Your Journey" button compatibility
 function enableAudio() {
+    console.log('User clicked - starting audio and narration');
     if (window.cinematicWebsite && window.cinematicWebsite.audio) {
         window.cinematicWebsite.audio.volume = 0.17;
-        window.cinematicWebsite.audio.play();
-        window.cinematicWebsite.isAudioPlaying = true;
-        console.log('Background music enabled by user interaction at 17%');
+        window.cinematicWebsite.audio.play().then(() => {
+            window.cinematicWebsite.isAudioPlaying = true;
+            console.log('✅ AUDIO STARTED at 17% volume');
+        }).catch(err => {
+            console.log('❌ Audio failed:', err);
+        });
+    }
+    
+    // Start narration
+    if (window.cinematicWebsite) {
+        window.cinematicWebsite.startIntroductoryNarration();
     }
 }
 
