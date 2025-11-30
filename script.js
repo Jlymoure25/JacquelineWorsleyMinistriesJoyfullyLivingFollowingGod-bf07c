@@ -40,32 +40,12 @@ class CinematicWebsite {
         // Start SoundCloud and narrator voice together - IMMEDIATE auto-start
         this.playIntroductionSequence();
         
-        // Force audio start after short delay to ensure SoundCloud is ready
-        setTimeout(() => {
-            this.forceStartAudio();
-        }, 2000);
+
         
         // Add page-wide click listener to start audio
         this.addAutoStartListener();
         
-        // Add page-wide click listener to guarantee audio starts
-        this.addAutoStartListener();
-        
-        console.log('Jacqueline Worsley Ministries website initialized with auto-start on any click');
-    }
-    
-    addAutoStartListener() {
-        const startAudioOnClick = () => {
-            if (!this.isAudioPlaying && this.scWidget) {
-                console.log('Starting SoundCloud We Belong Together on user interaction...');
-                this.scWidget.setVolume(17);
-                this.scWidget.play();
-                this.isAudioPlaying = true;
-                document.removeEventListener('click', startAudioOnClick);
-            }
-        };
-        document.addEventListener('click', startAudioOnClick);
-        console.log('Page click listener added - SoundCloud audio will start on user click');
+        console.log('Jacqueline Worsley Ministries website initialized with SoundCloud API');
     }
     
     addAutoStartListener() {
@@ -180,11 +160,10 @@ class CinematicWebsite {
 
 
     playIntroductionSequence() {
-        console.log('Starting synchronized introduction sequence');
+        console.log('Starting SoundCloud introduction sequence');
         
-        // Start SoundCloud and narrator voice at EXACTLY the same time
+        // Let SoundCloud API handle audio automatically
         this.startBackgroundMusic();
-        this.startIntroductoryNarration();
     }
     
     startIntroductoryNarration() {
@@ -337,18 +316,7 @@ class CinematicWebsite {
 
 
 
-    forceStartAudio() {
-        console.log('Force starting SoundCloud We Belong Together audio...');
-        if (this.scWidget) {
-            this.scWidget.setVolume(17);
-            this.scWidget.play();
-            this.isAudioPlaying = true;
-            console.log('SoundCloud audio force started at 17% volume');
-        } else {
-            console.log('SoundCloud widget not ready, retrying...');
-            setTimeout(() => this.forceStartAudio(), 1000);
-        }
-    }
+
     
     startBackgroundMusic() {
         console.log('Background music started via SoundCloud');
@@ -819,18 +787,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions for "Begin Your Journey" button compatibility
 function enableAudio() {
-    if (window.cinematicWebsite && window.cinematicWebsite.scWidget) {
-        window.cinematicWebsite.scWidget.setVolume(17);
-        window.cinematicWebsite.scWidget.play();
-        window.cinematicWebsite.isAudioPlaying = true;
-        console.log('SoundCloud We Belong Together enabled by user interaction');
-    }
+    // Let SoundCloud Widget API handle audio automatically
+    console.log('Audio enabled - SoundCloud API active');
 }
 
 function startAudioAndNarration() {
-    if (window.cinematicWebsite) {
-        window.cinematicWebsite.startIntroductoryNarration();
-    }
+    // SoundCloud API handles audio, narrator starts separately
+    console.log('SoundCloud API managing audio playback');
 }
 
 function startJourney() {
