@@ -283,12 +283,12 @@ class CinematicWebsite {
 
 
     forceStartAudio() {
-        console.log('Force starting SoundCloud We Belong Together audio...');
+        console.log('Force starting SoundCloud We Belong Together...');
         if (this.scWidget) {
             this.scWidget.setVolume(17);
             this.scWidget.play();
             this.isAudioPlaying = true;
-            console.log('SoundCloud audio force started at 17% volume');
+            console.log('SoundCloud We Belong Together force started at 17% volume');
         } else {
             console.log('SoundCloud widget not ready, retrying...');
             setTimeout(() => this.forceStartAudio(), 1000);
